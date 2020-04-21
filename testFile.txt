@@ -1,0 +1,7 @@
+programa patito;
+
+
+principal ( )
+{
+escribe(5);
+}

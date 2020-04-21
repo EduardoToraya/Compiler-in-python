@@ -1,0 +1,19 @@
+Reporte Entrega 13 Abril
+Entrega del analizador lexico y sintactico
+
+Issues a reparar para siguiente entrega:
+I1.1 No indenfitica errores en específico.
+I1.2 Faltaron pruebas extensivas.
+I1.3 Se duda de que la gramática sea sólida en un 100%
+
+
+
+Reporte Entrega 20 Abril
+Entrega del analizador lexico y sintactico de cambio de proyecto a ForeverAlone
+
+Diagramas de sintaxis: https://www.lucidchart.com/documents/edit/5059454c-35d8-4bb4-8807-630eae053432/0_0
+
+Issues a reparar para siguiente entrega:
+I1.1 No indenfitica errores en específico.
+I1.2 Faltaron pruebas extensivas.
+I1.3 Atraso total entrega 2, directorio de procedimientos y tabla de variables.
