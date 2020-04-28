@@ -1,9 +1,26 @@
 import ply.yacc as yacc
 import sys
+from fa_lex import tokens
+from semantic_cube import semantic_cube
+
+current_type = ''
+current_func = 'global'
+dir_func = {
+    'global': {
+        'vars': {},
+        'params':{}
+    }
+}
+# dir typo
+
+quadruples = []
+#4 elemtos
+currQuad = []
+
+popper = []
+
 
 success = True
-
-from fa_lex import tokens
 
 ## gramatic rules
 def p_programa(p):
@@ -13,6 +30,7 @@ def p_programa(p):
             | PROGRAMA ID SEMICOLON vars principal
             | PROGRAMA ID SEMICOLON principal
     '''
+    print(dir_func)
 
 
 def p_principal(p):
@@ -26,39 +44,72 @@ def p_vars(p):
   '''
   vars : VAR vars_aux
   '''
-  p[0] = 'popo'
 
   ## seccion de vars para definir varios varios tipos de  id con o sin  brackets
 def p_vars_aux(p):
   '''
-  vars_aux : tipo_simple vars_aux1
-  		   | tipo_simple vars_aux1 vars_aux
+  vars_aux : tipo_simple vars_aux1 SEMICOLON
+  		   | tipo_simple vars_aux1 SEMICOLON vars_aux
   '''
 
   ##seccion de vars para ciclo de varias id con brackets
 def p_vars_aux1(p):
   '''
-  vars_aux1 : vars_aux2 SEMICOLON
+  vars_aux1 : vars_aux2
   		    | vars_aux2 COMMA vars_aux1
   '''
 
 ## seccion de vars para id con brackets
 def p_vars_aux2(p):
   '''
-    vars_aux2 : ID SEMICOLON
-    		  | ID LSQUARE CTE_I RSQUARE SEMICOLON
+    vars_aux2 : ID n_save_var
+    		  | ID LSQUARE CTE_I n_save_array RSQUARE
   '''
+
+def p_n_save_array(p):
+    '''
+        n_save_array :
+    '''
+    global current_func, current_type, dir_func
+    id = p[-3]
+    size = p[-1]
+    if(id in dir_func[current_func]):
+        error(p, 'La variable ya fue instanciada')
+    else:
+        dir_func[current_func]['vars'][id] ={
+            'type' : current_type,
+            'size' : size
+        }
+
+def p_n_save_var(p):
+    '''
+        n_save_var :
+    '''
+    global current_func, current_type, dir_func
+    id = p[-1]
+    if (id in dir_func[current_func]['vars'] or id in dir_func[current_func]['params']):
+        error(p, 'La variable ya fue instanciada')
+    else:
+        dir_func[current_func]['vars'][id] ={
+            'type' : current_type,
+        }
 
 def p_tipo_simple(p):
     '''
-    tipo_simple : INT
-                | FLOAT
-                | CHAR
+    tipo_simple : INT n_save_type
+                | FLOAT n_save_type
+                | CHAR n_save_type
     '''
+
+def p_n_save_type(p):
+    '''n_save_type : '''
+    global current_type
+    current_type = p[-1]
+
 
 def p_empty(p):
     '''
-    empty : 
+    empty :
     '''
 
 def p_variable(p):
@@ -69,30 +120,67 @@ def p_variable(p):
 
 def p_funcion(p):
   '''
-  funcion : FUNCION tipo_simple ID LPAREN param RPAREN vars SEMICOLON bloque
-  		  | FUNCION tipo_simple ID LPAREN param RPAREN SEMICOLON bloque
-  		  | FUNCION VOID ID LPAREN param RPAREN vars SEMICOLON bloque
-          | FUNCION VOID ID LPAREN param RPAREN SEMICOLON bloque
+  funcion : FUNCION tipo_simple ID n_register_func LPAREN param RPAREN vars bloque
+  		  | FUNCION tipo_simple ID n_register_func LPAREN param RPAREN bloque
+  		  | FUNCION VOID n_save_type ID n_register_func LPAREN param RPAREN vars bloque
+          | FUNCION VOID n_save_type ID n_register_func LPAREN param RPAREN bloque
+          | FUNCION tipo_simple ID n_register_func LPAREN RPAREN vars bloque
+          | FUNCION tipo_simple ID n_register_func LPAREN RPAREN bloque
+          | FUNCION VOID n_save_type ID n_register_func LPAREN RPAREN vars bloque
+          | FUNCION VOID n_save_type ID n_register_func LPAREN RPAREN bloque
   '''
+
+def p_n_register_func(p):
+    '''n_register_func : '''
+    global dir_func, current_func, current_type
+    if (p[-1] in dir_func):
+        error(p, 'La función ya existe')
+    else:
+        current_func = p[-1]
+        dir_func[current_func] = {
+            'type': current_type,
+            'params' : {},
+            'vars': {}
+        }
 
 def p_param(p):
   '''
-  param : ID
-  		| ID COMMA param
-        | empty
+  param : tipo_simple param_aux1
+        | tipo_simple param_aux1 param
   '''
+
+  ##seccion de vars para ciclo de varias id con brackets
+def p_param_aux1(p):
+  '''
+  param_aux1 : ID save_param
+  		     | ID save_param COMMA param
+  '''
+
+def p_save_param(p):
+    '''
+    save_param :
+    '''
+    global current_func, dir_func, current_type
+    id = p[-1]
+    if(id in dir_func[current_func]['params']):
+        error('p', "Parametro ya declarado")
+    else:
+        id  = p[-1]
+        dir_func[current_func]['params'][id] ={
+            'type': current_type
+        }
 
 
 def p_bloque(p):
   '''
   bloque : LBRACKET mult_estatutos RBRACKET
+         | LBRACKET empty RBRACKET
   '''
 
 def p_mult_estatutos(p):
   '''
   mult_estatutos : estatuto
   				 | estatuto mult_estatutos
-                 | empty
   '''
 
 def p_estatuto(p):
@@ -163,7 +251,7 @@ def p_g_exp(p):
         | LESSEQUAL m_exp
         | GREATERTHAN m_exp
         | GREATEREQUAL m_exp
-        | EQUAL m_exp
+        | SAME m_exp
         | NOEQUAL m_exp
   '''
 
@@ -179,9 +267,6 @@ def p_t(p):
   	t : f
       | f MULT t
       | f DIV t
-      | f DETER t
-      | f TRANS t
-      | f INVER t
   '''
 
 def p_f(p):
@@ -231,8 +316,13 @@ def p_retorno(p):
 def p_error(p):
     global success
     success = False
-    print("Error de sintaxis en '%s'" % p.value[0])
     p.lexer.skip(1)
+    raise SyntaxError
+    # TODO:¨parar la compilación
+
+def error(p, message):
+    print("Error: ", message)
+    p_error(p)
 
 
 parser = yacc.yacc()

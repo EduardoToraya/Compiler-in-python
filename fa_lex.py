@@ -11,7 +11,6 @@ tokens = [
     'RBRACKET',     ## }
     'LSQUARE',      ## [
     'RSQUARE',      ## ]
-    'COLON',        ## :
     'COMMA',        ## ,
     'SEMICOLON',    ## ;
     'COMMENT',      ## %%
@@ -32,9 +31,6 @@ tokens = [
     'AND',          ## &
     'OR',           ## |
     'SAME',         ## ==
-    'DETER',        ## $
-    'TRANS',        ## ¡
-    'INVER',        ## ?
     ]
 
 ##Reserved words
@@ -94,11 +90,6 @@ t_PLUS = r'\+'
 t_MINUS = r'\-'
 t_MULT = r'\*'
 t_DIV = r'\/'
-
-# Matrix Operators
-t_DETER = r'\$'
-t_TRANS = r'\¡'
-t_INVER = r'\?'
 
 # Constants
 t_CTE_I = r'[0-9]+'

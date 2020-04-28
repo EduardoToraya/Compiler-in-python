@@ -17,3 +17,14 @@ Issues a reparar para siguiente entrega:
 I1.1 No indenfitica errores en específico.
 I1.2 Faltaron pruebas extensivas.
 I1.3 Atraso total entrega 2, directorio de procedimientos y tabla de variables.
+
+
+Reporte Entrega 27
+Entrega del cubo semántico y otros.
+
+Issues a reparar para siguiente entrega:
+I1.1 No indenfitica errores en específico.
+I1.2 Atraso parcial entrega 3 -> falto generar cuádruplos con estatutos lineales.
+
+Progreso:
+1.- tokens, diagramas sintaxis, cubo semantico, dir funciones, tabla de  variables.

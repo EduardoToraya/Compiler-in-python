@@ -1,5 +1,13 @@
 programa patito;
+var
+int i, j, k;
+char c ,l , m;
+float arreglo[10], arreglo2[5];
 
+funcion void inicia1(int z, int aca)
+var
+int h;
+{}
 
 principal ( )
 {
