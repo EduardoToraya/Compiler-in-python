@@ -28,3 +28,9 @@ I1.2 Atraso parcial entrega 3 -> falto generar cuádruplos con estatutos lineale
 
 Progreso:
 1.- tokens, diagramas sintaxis, cubo semantico, dir funciones, tabla de  variables.
+
+
+Reporte entrega 4 mayo
+Entrega de atraso en estatutos lineales y entrega de estatutos no lineales.
+I1.- Posible que se requiera agregar un dato más  al cuadruplo con número de cuadruplo.
+I2.- Falta manejar memoria.

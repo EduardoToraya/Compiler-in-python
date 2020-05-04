@@ -59,3 +59,6 @@ semantic_cube['float']['<>']['int'] = 'bool'
 semantic_cube['int']['<>']['float'] = 'bool'
 semantic_cube['float']['<>']['float'] = 'bool'
 semantic_cube['char']['<>']['char'] = 'bool'
+
+semantic_cube['bool']['&']['bool'] = 'bool'
+semantic_cube['bool']['|']['bool'] = 'bool' 

@@ -1,0 +1,16 @@
+programa patito;
+var
+int i, j, k;
+char c ,l , m;
+float arreglo[10], arreglo2[5];
+
+funcion void inicia1(int z, int zac, char asdasdas)
+var
+int h;
+{}
+
+principal()
+{
+
+escribe(5*3*2+333*22/6>3 & 5>= 4 | 5>3+ 6*4*5 & 54>4);
+}
