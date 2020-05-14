@@ -7,11 +7,31 @@ float arreglo[10], arreglo2[5];
 funcion void inicia1(int z, int zac, char asdasdas)
 var
 int h, i;
-{}
+{
+  escribe(11);
+}
+
+funcion void inicia2(int z, int zac, char asdasdas)
+var
+int h, i;
+{
+  escribe(10.1);
+}
+
+funcion void inicia3(int z, int zac, char asdasdas)
+var
+int h, i;
+{
+  escribe('c');
+}
 
 principal()
 {
-  desde i=0 hasta 5+10 hacer{
+  i = 5;
+  i = i + i;
+  c = 'a';
+  l = 'b';
+  desde i=0+5 hasta 5+10 hacer{
     escribe(10);
     escribe (11);
     si (5>4) entonces

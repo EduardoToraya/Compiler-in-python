@@ -3,40 +3,30 @@ import sys
 from fa_lex import tokens
 from semantic_cube import semantic_cube
 from pprint import pprint
+from stack import Stack
 
-class Stack:
-     def __init__(self):
-         self.items = []
+DIR_BASE_INT = 0
+DIR_BASE_FLOAT = 2500
+DIR_BASE_CHAR = 5000
+DIR_BASE_BOOL = 7500
 
-     def isEmpty(self):
-         return self.items == []
 
-     def push(self, item):
-         self.items.append(item)
 
-     def pop(self):
-         return self.items.pop()
+DIR_LENGTH = 2500
 
-     def peek(self):
-         return self.items[len(self.items)-1]
+DIR_BASE_GLOBAL = 0
+DIR_BASE_LOCAL = 10000
+DIR_BASE_CTE = 20000
 
-     def size(self):
-         return len(self.items)
+# dir_counter_Temp_Int = dir_Base_Temp + dir_Base_Int;
+# dir_counter_Temp_Float = dir_Base_Temp + dir_Base_Float;
+# dir_counter_Temp_Char = dir_Base_Temp + dir_Base_Char;
+# dir_counter_Temp_Bool = dir_Base_Temp + dir_Base_Bool;
 
-dir_Base_Int = 0;
-dir_Base_Float = 2000;
-dir_Base_Char = 4000;
-dir_Base_Bool = 6000;
-
-dir_Base_Global = 0;
-dir_Base_Local = 10000;
-dir_Base_Temp = 20000;
-dir_Base_Cte = 30000;
-
-dir_counter_Temp_Int = dir_Base_Temp + dir_Base_Int;
-dir_counter_Temp_Float = dir_Base_Temp + dir_Base_Float;
-dir_counter_Temp_Char = dir_Base_Temp + dir_Base_Char;
-dir_counter_Temp_Bool = dir_Base_Temp + dir_Base_Bool;
+class Operando:
+    def __init__(self):
+        self.id = None
+        self.address = None
 
 contadorCuadruplo = 0;
 currTemp = 0;
@@ -46,16 +36,27 @@ current_func = 'global'
 dir_func = {
     'global': {
         'vars': {},
-        'params':{}
+        'params': {},
+        'next_int': DIR_BASE_GLOBAL + DIR_BASE_INT,
+        'next_float': DIR_BASE_GLOBAL + DIR_BASE_FLOAT,
+        'next_char': DIR_BASE_GLOBAL + DIR_BASE_CHAR,
+        'next_bool': DIR_BASE_GLOBAL + DIR_BASE_BOOL
+    },
+    'constants': {
+        'next_int': DIR_BASE_CTE + DIR_BASE_INT,
+        'next_float': DIR_BASE_CTE + DIR_BASE_FLOAT,
+        'next_char': DIR_BASE_CTE + DIR_BASE_CHAR,
+        'next_bool': DIR_BASE_CTE + DIR_BASE_BOOL,
+        'cte': {
+            #'a': 1000 Formato compilación
+            #1000: 'a' Formato maquina virtual
+        }
     }
 }
 
 # dir typo
-Readquadruples = []
-quadruples = []
-
-#4 elemtos
-currQuad = []
+read_quadruples = []
+dir_quadruples = []
 
 #manejo operadores
 popper = Stack();
@@ -69,22 +70,27 @@ success = True
 ## gramatic rules
 def p_programa(p):
     '''
-    programa : PROGRAMA ID SEMICOLON vars funcion principal
-            | PROGRAMA ID SEMICOLON funcion principal
+    programa : PROGRAMA ID SEMICOLON vars mult_funcion principal
+            | PROGRAMA ID SEMICOLON mult_funcion principal
             | PROGRAMA ID SEMICOLON vars principal
             | PROGRAMA ID SEMICOLON principal
     '''
     pprint(dir_func)
-    pprint("inicio de cuadruplos")
-    pprint(quadruples)
-    #print(semantic_cube['float']['+']['int'])
-
+    print("inicio de cuadruplos nombres", '\t\t', 'inicio de cuadruplos de direcciones')
+    for i, cuadruplo in enumerate(read_quadruples):
+        print(i, cuadruplo, " ",'\t\t', i ,dir_quadruples[i])
 
 def p_principal(p):
     '''
-    principal : PRINCIPAL LPAREN RPAREN bloque
+    principal : PRINCIPAL n_register_glob LPAREN RPAREN bloque
     '''
 
+def p_n_register_glob(p):
+    '''
+    n_register_glob :
+    '''
+    global current_func
+    current_func = 'global'
 
 # variable declaration
 def p_vars(p):
@@ -139,7 +145,58 @@ def p_n_save_var(p):
     else:
         dir_func[current_func]['vars'][id] ={
             'type' : current_type,
+            'address': get_next_var_address(p)
         }
+
+def get_next_var_address(p):
+    global dir_func
+    if current_func == 'global':
+        base = DIR_BASE_GLOBAL
+    else:
+        base = DIR_BASE_LOCAL
+
+    if(current_type == 'int'):
+        baseType = 0;
+    elif(current_type == 'float'):
+        baseType = 2500;
+    elif(current_type == 'char'):
+        baseType = 5000;
+    else:
+        baseType = 7500;
+
+    if dir_func[current_func]['next_' + current_type] - base - baseType < DIR_LENGTH:
+        aux = dir_func[current_func]['next_' + current_type]
+        dir_func[current_func]['next_' + current_type] += 1
+        return aux
+    else:
+        error(p, "Numero de variables en su limite")
+
+
+def get_next_cte_address(p, id):
+    global dir_func
+    if (id in dir_func['constants']['cte']):
+        return dir_func['constants']['cte'][id]['address'];
+    else:
+        if(current_type == 'int'):
+            baseType = 0;
+        elif(current_type == 'float'):
+            baseType = 2500;
+        elif(current_type == 'char'):
+            baseType = 5000;
+        else:
+            baseType = 7500;
+        base = DIR_BASE_CTE;
+        if(dir_func['constants']['next_'+current_type] - base - baseType < DIR_LENGTH):
+            aux = dir_func['constants']['next_'+current_type];
+            dir_func['constants']['next_'+current_type] += 1;
+            dir_func['constants']['cte'][id] = {
+                'address' : aux
+            }
+            return aux;
+        else:
+            error(p, "Numero de constantes " + current_type + " en su límite")
+
+
 
 def p_tipo_simple(p):
     '''
@@ -173,18 +230,28 @@ def p_n_getVarVal(p):
     #guarda exp para funciones posteriores
     id = p[-1]
     current_exp = id
+    temp_op = Operando()
     ##segunda parte para cuadruplos
+    temp_op.id = id
     if(id in dir_func[current_func]['vars']):
-        pilaOp.push(id)
+        temp_op.address = dir_func[current_func]['vars'][id]['address']
+        pilaOp.push(temp_op)
         type = dir_func[current_func]['vars'][id]['type']
         pilaTipos.push(type)
     else:
         if(id in dir_func['global']['vars']):
-                pilaOp.push(id)
-                type = dir_func['global']['vars'][id]['type']
-                pilaTipos.push(type)
+            temp_op.address = dir_func['global']['vars'][id]['address']
+            pilaOp.push(temp_op)
+            type = dir_func['global']['vars'][id]['type']
+            pilaTipos.push(type)
         else:
             error(p, "La variable no se encuentra en el ambiente")
+
+def p_mult_funcion(p):
+    '''
+    mult_funcion : funcion
+                 | funcion mult_funcion
+    '''
 
 def p_funcion(p):
   '''
@@ -208,8 +275,13 @@ def p_n_register_func(p):
         dir_func[current_func] = {
             'type': current_type,
             'params' : {},
-            'vars': {}
+            'vars': {},
+            'next_int': DIR_BASE_LOCAL + DIR_BASE_INT,
+            'next_float': DIR_BASE_LOCAL + DIR_BASE_FLOAT,
+            'next_char': DIR_BASE_LOCAL + DIR_BASE_CHAR,
+            'next_bool': DIR_BASE_LOCAL + DIR_BASE_BOOL
         }
+
 
 def p_param(p):
   '''
@@ -276,7 +348,7 @@ def p_n_asignQuad(p):
     '''
     n_asignQuad :
     '''
-    global popper, pilaOp, pilaTipos, quadruples, currTemp
+    global popper, pilaOp, pilaTipos, read_quadruples, currTemp, dir_quadruples
     if(not popper.isEmpty()):
         aux = popper.peek()
         if(aux == '='):
@@ -288,11 +360,13 @@ def p_n_asignQuad(p):
             tipoResultado = semantic_cube[tipoIzquierdo][operador][tipoDerecho]
 
             if(tipoResultado != None):
-                #result avail.next()
-                tempQuad = [operador, opDerecho, -1, opIzquierdo]
+                tempQuad = [operador, opDerecho.id, -1, opIzquierdo.id]
                 pilaOp.push(opIzquierdo)
                 pilaTipos.push(tipoResultado)
-                quadruples.append(tempQuad)
+                read_quadruples.append(tempQuad)
+                tempQuad = [operador, opDerecho.address, -1, opIzquierdo.address]
+                dir_quadruples.append(tempQuad)
+
             else:
                 error(p, "Tipo no compatible para la operacion de asignación")
 
@@ -318,9 +392,14 @@ def p_n_escribeExp(p):
     '''
     n_escribeExp :
     '''
-    global dir_func, quadruples, current_exp
-    currQuad = ['print', -1, -1, pilaOp.pop()]
-    quadruples.append(currQuad)
+    global dir_func, read_quadruples, current_exp
+    operando = pilaOp.pop();
+    currQuad = ['print', -1, -1, operando.id]
+    read_quadruples.append(currQuad)
+    currQuad = ['print', -1, -1, operando.address]
+    dir_quadruples.append(currQuad)
+
+
 
 def p_mult_cte_s(p):
   '''
@@ -344,7 +423,7 @@ def p_n_orQuad(p):
     '''
     n_orQuad :
     '''
-    global popper, pilaOp, pilaTipos, quadruples, tempQuad, currTemp
+    global popper, pilaOp, pilaTipos, read_quadruples, currTemp, dir_quadruples, current_type
     if(not popper.isEmpty()):
         aux = popper.peek()
         if(aux == '|'):
@@ -354,15 +433,24 @@ def p_n_orQuad(p):
             tipoIzquierdo = pilaTipos.pop();
             operador = popper.pop()
             tipoResultado = semantic_cube[tipoIzquierdo][operador][tipoDerecho]
-
+            current_type = tipoResultado
             if(tipoResultado != None):
                 #result avail.next()
                 temporal = 't' + str(currTemp)
-                tempQuad = [operador, opIzquierdo, opDerecho, temporal]
+                temp_op = Operando();
+                temp_op.id = temporal;
+
+                temp_op.address = get_next_var_address(p);
+
+                tempQuad = [operador, opIzquierdo.id, opDerecho.id, temp_op.id]
                 currTemp = currTemp + 1;
-                pilaOp.push(temporal)
+
+                pilaOp.push(temp_op)
                 pilaTipos.push(tipoResultado)
-                quadruples.append(tempQuad)
+                read_quadruples.append(tempQuad)
+                tempQuad = [operador, opIzquierdo.address, opDerecho.address, temp_op.address]
+                dir_quadruples.append(tempQuad)
+
             else:
                 error(p, "Tipo no compatible para la operacion de OR")
 
@@ -377,7 +465,7 @@ def p_n_andQuad(p):
     '''
     n_andQuad :
     '''
-    global popper, pilaOp, pilaTipos, quadruples, tempQuad, currTemp
+    global popper, pilaOp, pilaTipos, read_quadruples, currTemp, dir_quadruples, current_type
     if(not popper.isEmpty()):
         aux = popper.peek()
         if(aux == '&'):
@@ -387,15 +475,22 @@ def p_n_andQuad(p):
             tipoIzquierdo = pilaTipos.pop();
             operador = popper.pop()
             tipoResultado = semantic_cube[tipoIzquierdo][operador][tipoDerecho]
-
+            current_type = tipoResultado
             if(tipoResultado != None):
                 #result avail.next()
                 temporal = 't' + str(currTemp)
-                tempQuad = [operador, opIzquierdo, opDerecho, temporal]
+                temp_op = Operando();
+                temp_op.id = temporal;
+                temp_op.address = get_next_var_address(p)
+
+                tempQuad = [operador, opIzquierdo.id, opDerecho.id, temp_op.id]
                 currTemp = currTemp + 1;
-                pilaOp.push(temporal)
+
+                pilaOp.push(temp_op)
                 pilaTipos.push(tipoResultado)
-                quadruples.append(tempQuad)
+                read_quadruples.append(tempQuad)
+                tempQuad = [operador, opIzquierdo.address, opDerecho.address, temp_op.address]
+                dir_quadruples.append(tempQuad);
             else:
                 error(p, "Tipo no compatible para la operacion de AND")
 
@@ -416,7 +511,7 @@ def p_n_compareQuad(p):
     '''
     n_compareQuad :
     '''
-    global popper, pilaOp, pilaTipos, quadruples, tempQuad, currTemp
+    global popper, pilaOp, pilaTipos, read_quadruples, currTemp, dir_quadruples, current_type
     if(not popper.isEmpty()):
         aux = popper.peek()
         if(aux == '<' or aux == '<=' or aux == '>' or aux == '>='
@@ -427,15 +522,21 @@ def p_n_compareQuad(p):
             tipoIzquierdo = pilaTipos.pop();
             operador = popper.pop()
             tipoResultado = semantic_cube[tipoIzquierdo][operador][tipoDerecho]
-
+            current_type = tipoResultado
             if(tipoResultado != None):
                 #result avail.next()
                 temporal = 't' + str(currTemp)
-                tempQuad = [operador, opIzquierdo, opDerecho, temporal]
+                temp_op = Operando();
+                temp_op.id = temporal;
+                temp_op.address = get_next_var_address(p);
+
+                tempQuad = [operador, opIzquierdo.id, opDerecho.id, temp_op.id]
                 currTemp = currTemp + 1;
-                pilaOp.push(temporal)
+                pilaOp.push(temp_op)
                 pilaTipos.push(tipoResultado)
-                quadruples.append(tempQuad)
+                read_quadruples.append(tempQuad)
+                tempQuad = [operador, opIzquierdo.address, opDerecho.address, temp_op.address];
+                dir_quadruples.append(tempQuad)
             else:
                 error(p, "Tipo no compatible para la operacion de comparación")
 
@@ -452,7 +553,7 @@ def p_n_sumQuad(p):
     '''
     n_sumQuad :
     '''
-    global popper, pilaOp, pilaTipos, quadruples, tempQuad, currTemp
+    global popper, pilaOp, pilaTipos, read_quadruples, currTemp, dir_quadruples, current_type
     if(not popper.isEmpty()):
         aux = popper.peek()
         if(aux == '+' or aux == '-'):
@@ -462,15 +563,21 @@ def p_n_sumQuad(p):
             tipoIzquierdo = pilaTipos.pop();
             operador = popper.pop()
             tipoResultado = semantic_cube[tipoIzquierdo][operador][tipoDerecho]
-
+            current_type = tipoResultado
             if(tipoResultado != None):
                 #result avail.next()
                 temporal = 't' + str(currTemp)
-                tempQuad = [operador, opIzquierdo, opDerecho, temporal]
+                temp_op = Operando();
+                temp_op.id = temporal;
+                temp_op.address = get_next_var_address(p);
+
+                tempQuad = [operador, opIzquierdo.id, opDerecho.id, temp_op.id]
                 currTemp = currTemp + 1;
-                pilaOp.push(temporal)
+                pilaOp.push(temp_op)
                 pilaTipos.push(tipoResultado)
-                quadruples.append(tempQuad)
+                read_quadruples.append(tempQuad)
+                tempQuad = [operador, opIzquierdo.address, opDerecho.address, temp_op.address]
+                dir_quadruples.append(tempQuad)
             else:
                 error(p, "Tipo no compatible para la operacion de suma/resta")
 
@@ -488,7 +595,7 @@ def p_n_multQuad(p):
     '''
     n_multQuad :
     '''
-    global popper, pilaOp, pilaTipos, quadruples, tempQuad, currTemp
+    global popper, pilaOp, pilaTipos, read_quadruples, currTemp, dir_quadruples, current_type
     if(not popper.isEmpty()):
         aux = popper.peek()
         if(aux == '*' or aux == '/'):
@@ -498,15 +605,22 @@ def p_n_multQuad(p):
             tipoIzquierdo = pilaTipos.pop();
             operador = popper.pop()
             tipoResultado = semantic_cube[tipoIzquierdo][operador][tipoDerecho]
+            current_type = tipoResultado;
 
             if(tipoResultado != None):
                 #result avail.next()
                 temporal = 't' + str(currTemp)
-                tempQuad = [operador, opIzquierdo, opDerecho, temporal]
+                temp_op = Operando();
+                temp_op.id=temporal;
+                temp_op.address = get_next_var_address(p);
+
+                tempQuad = [operador, opIzquierdo.id, opDerecho.id, temp_op.id]
                 currTemp = currTemp + 1;
-                pilaOp.push(temporal)
+                pilaOp.push(temp_op)
                 pilaTipos.push(tipoResultado)
-                quadruples.append(tempQuad)
+                read_quadruples.append(tempQuad)
+                tempQuad = [operador, opIzquierdo.address, opDerecho.address, temp_op.address]
+                dir_quadruples.append(tempQuad);
             else:
                 error(p, "Tipo no compatible para la operacion de mult/div")
 
@@ -559,7 +673,10 @@ def p_n_directPrint(p):
     '''
     global current_exp, pilaOp, pilaTipos
     current_exp = p[-1]
-    pilaOp.push(current_exp)
+    operador = Operando();
+    operador.id = current_exp;
+    operador.address = get_next_cte_address(p, operador.id);
+    pilaOp.push(operador)
     pilaTipos.push(current_type)
 
 def p_n_FF(p):
@@ -579,34 +696,39 @@ def p_n_ifQuad(p):
     '''
     n_ifQuad :
     '''
-    global popper, pilaOp, pilaTipos, quadruples
+    global popper, pilaOp, pilaTipos, read_quadruples, dir_quadruples
     expType = pilaTipos.pop();
     if(expType != 'bool'):
         error(p, 'La expresion condicional no es un booleano')
     else:
         result = pilaOp.pop()
-        quad = ['GotoF', result, -1, 'empty']
-        quadruples.append(quad)
-        pilaSaltos.push(len(quadruples)-1)
+        quad = ['GotoF', result.id, -1, 'empty']
+        read_quadruples.append(quad)
+        quad = ['GotoF', result.address, -1, 'empty']
+        dir_quadruples.append(quad)
+        pilaSaltos.push(len(read_quadruples)-1)
 
 def p_n_endIfQuad(p):
     '''
     n_endIfQuad :
     '''
-    global pilaSaltos, quadruples
+    global pilaSaltos, read_quadruples, dir_quadruples
     end = pilaSaltos.pop()
-    quadruples[end][3] = len(quadruples)
+    read_quadruples[end][3] = len(read_quadruples)
+    dir_quadruples[end][3] = len(dir_quadruples)
 
 def p_n_sinoQuad(p):
     '''
     p_n_sinoQuad :
     '''
-    global pilaSaltos, quadruples
+    global pilaSaltos, read_quadruples, dir_quadruples
     falso = pilaSaltos.pop()
     quad = ['Goto', -1, -1, 'empty']
-    quadruples.append(quad)
-    pilaSaltos.push(len(quadruples)-1)
-    quadruples[falso][3] = len(quadruples)
+    read_quadruples.append(quad)
+    dir_quadruples.append(quad)
+    pilaSaltos.push(len(read_quadruples)-1)
+    read_quadruples[falso][3] = len(read_quadruples)
+    dir_quadruples[falso][3] = len(dir_quadruples)
 
 def p_ciclo_w(p):
   '''
@@ -618,39 +740,44 @@ def p_n_startCicle(p):
     n_startCicle :
     '''
     global pilaSaltos
-    pilaSaltos.push(len(quadruples))
+    pilaSaltos.push(len(read_quadruples))
 
 def p_n_evalExp(p):
     '''
     n_evalExp :
     '''
-    global pilaTipos, pilaOp, quadruples
+    global pilaTipos, pilaOp, read_quadruples, dir_quadruples
     type = pilaTipos.pop()
     if(type != 'bool'):
         error(p, 'La expresion del mientras no es booleana');
     else:
         result = pilaOp.pop();
-        quad = ['GotoF', result, -1, 'empty'];
-        quadruples.append(quad)
-        pilaSaltos.push(len(quadruples)-1)
+        quad = ['GotoF', result.id, -1, 'empty'];
+        read_quadruples.append(quad)
+        quad = ['GotoF', result.address, -1, 'empty'];
+        dir_quadruples.append(quad)
+        pilaSaltos.push(len(read_quadruples)-1)
 
 def p_n_endWhile(p):
     '''
     n_endWhile :
     '''
-    global pilaSaltos, quadruples
+    global pilaSaltos, read_quadruples, dir_quadruples
     end = pilaSaltos.pop()
     ret = pilaSaltos.pop()
     quad = ['Goto', -1, -1, ret]
-    quadruples.append(quad)
-    quadruples[end][3] = len(quadruples)
+    read_quadruples.append(quad)
+    read_quadruples[end][3] = len(read_quadruples)
+
+    dir_quadruples.append(quad)
+    dir_quadruples[end][3] = len(dir_quadruples)
 
 
 
 
 def p_ciclo_f(p):
   '''
-  ciclo_f : DESDE n_startCicle asigna HASTA mult_exp n_evalExp_for HACER bloque n_endFor
+  ciclo_f : DESDE asigna n_startCicle HASTA mult_exp n_evalExp_for HACER bloque n_endFor
   '''
 
 #pilatipos pilaOp
@@ -658,33 +785,44 @@ def p_n_evalExp_for(p):
     '''
     n_evalExp_for :
     '''
-    global pilaTipos, pilaOp, quadruples, semantic_cube, currTemp, pilaSaltos
+    global pilaTipos, pilaOp, read_quadruples, semantic_cube, currTemp, pilaSaltos, dir_quadruples, current_type
     typeExp = pilaTipos.pop()
     typeAsig = pilaTipos.pop();
     if(semantic_cube[typeAsig]['<'][typeExp] != 'bool'):
         error(p, 'La expresion del for no es compatible');
     else:
+        current_type = 'bool'
         opExp = pilaOp.pop();
         opAsig = pilaOp.pop();
         temp = 't' + str(currTemp)
-        quad = ['<', opAsig, opExp, temp]
-        quadruples.append(quad)
+        temp_op = Operando();
+        temp_op.id = temp;
+        temp_op.address = get_next_var_address(p);
 
-        quad = ['GotoF', temp, -1, 'empty'];
+        quad = ['<', opAsig.id, opExp.id, temp_op.id]
+        read_quadruples.append(quad)
+        quad = ['<', opAsig.address, opExp.address, temp_op.address]
+        dir_quadruples.append(quad);
+
+        quad = ['GotoF', temp_op.id, -1, 'empty'];
         currTemp = currTemp + 1
-        quadruples.append(quad)
-        pilaSaltos.push(len(quadruples)-1)
+        read_quadruples.append(quad)
+        quad = ['GotoF', temp_op.address, -1, 'empty'];
+        dir_quadruples.append(quad)
+        pilaSaltos.push(len(read_quadruples)-1)
 
 def p_n_endFor(p):
     '''
     n_endFor :
     '''
-    global pilaSaltos, quadruples
+    global pilaSaltos, read_quadruples
     end = pilaSaltos.pop()
     ret = pilaSaltos.pop()
-    quad = ['Goto', -1, -1, ret+1]
-    quadruples.append(quad)
-    quadruples[end][3] = len(quadruples)
+    quad = ['Goto', -1, -1, ret]
+    read_quadruples.append(quad)
+    read_quadruples[end][3] = len(read_quadruples)
+    dir_quadruples.append(quad)
+    dir_quadruples[end][3] = len(dir_quadruples)
 
 
 def p_retorno(p):
