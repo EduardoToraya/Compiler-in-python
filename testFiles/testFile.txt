@@ -15,18 +15,22 @@ funcion void inicia2(int z, int zac, char asdasdas)
 var
 int h, i;
 {
+  escribe(z);
   escribe(10.1);
+  escribe('c');
 }
 
 funcion void inicia3(int z, int zac, char asdasdas)
 var
 int h, i;
 {
-  escribe('c');
+  escribe(i+h);
 }
 
 principal()
 {
+  inicia1(5, 5, 'a');
+
   i = 5;
   i = i + i;
   c = 'a';

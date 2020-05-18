@@ -1,0 +1,33 @@
+programa pelos;
+var int i, j, k;
+
+int uno(int j)
+var int i;
+{
+i = j + (k-j*2+j);
+  si (j>0) entonces{
+    regresa(uno(i-j));
+  }
+  sino{
+    regresa (i+k);
+  }
+}
+
+void dos(int i, int j)
+var int x, y;
+{
+  x = i + j;
+  si(x>j*k) entonces{
+    escribe(uno(x-k));
+  }
+  sino{
+    escribe(uno(j));
+  }
+}
+
+principal(){
+  lee(k);
+  i = 5;
+  j = i*2+i;
+  dos(j-i, j);
+}

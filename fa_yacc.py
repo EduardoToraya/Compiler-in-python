@@ -10,7 +10,8 @@ DIR_BASE_FLOAT = 2500
 DIR_BASE_CHAR = 5000
 DIR_BASE_BOOL = 7500
 
-
+# nombre funcion guardar en espacio funcion
+# en el era
 
 DIR_LENGTH = 2500
 
@@ -18,10 +19,9 @@ DIR_BASE_GLOBAL = 0
 DIR_BASE_LOCAL = 10000
 DIR_BASE_CTE = 20000
 
-# dir_counter_Temp_Int = dir_Base_Temp + dir_Base_Int;
-# dir_counter_Temp_Float = dir_Base_Temp + dir_Base_Float;
-# dir_counter_Temp_Char = dir_Base_Temp + dir_Base_Char;
-# dir_counter_Temp_Bool = dir_Base_Temp + dir_Base_Bool;
+parameter_counter = 0
+
+curr_Call = None
 
 class Operando:
     def __init__(self):
@@ -255,14 +255,14 @@ def p_mult_funcion(p):
 
 def p_funcion(p):
   '''
-  funcion : FUNCION tipo_simple ID n_register_func LPAREN param RPAREN vars bloque
-  		  | FUNCION tipo_simple ID n_register_func LPAREN param RPAREN bloque
-  		  | FUNCION VOID n_save_type ID n_register_func LPAREN param RPAREN vars bloque
-          | FUNCION VOID n_save_type ID n_register_func LPAREN param RPAREN bloque
-          | FUNCION tipo_simple ID n_register_func LPAREN RPAREN vars bloque
-          | FUNCION tipo_simple ID n_register_func LPAREN RPAREN bloque
-          | FUNCION VOID n_save_type ID n_register_func LPAREN RPAREN vars bloque
-          | FUNCION VOID n_save_type ID n_register_func LPAREN RPAREN bloque
+  funcion : FUNCION tipo_simple ID n_register_func LPAREN param RPAREN vars bloque n_endof_func
+  		  | FUNCION tipo_simple ID n_register_func LPAREN param RPAREN bloque n_endof_func
+  		  | FUNCION VOID n_save_type ID n_register_func LPAREN param RPAREN vars bloque n_endof_func
+          | FUNCION VOID n_save_type ID n_register_func LPAREN param RPAREN bloque n_endof_func
+          | FUNCION tipo_simple ID n_register_func LPAREN RPAREN vars bloque n_endof_func
+          | FUNCION tipo_simple ID n_register_func LPAREN RPAREN bloque n_endof_func
+          | FUNCION VOID n_save_type ID n_register_func LPAREN RPAREN vars bloque n_endof_func
+          | FUNCION VOID n_save_type ID n_register_func LPAREN RPAREN bloque n_endof_func
   '''
 
 def p_n_register_func(p):
@@ -274,13 +274,19 @@ def p_n_register_func(p):
         current_func = p[-1]
         dir_func[current_func] = {
             'type': current_type,
-            'params' : {},
+            'params' : [],
             'vars': {},
+            'num_vars_int' : None,
+            'num_vars_float' : None,
+            'num_vars_char' : None,
+            'num_vars_bool' : None,
+            'starts' : len(dir_quadruples),
             'next_int': DIR_BASE_LOCAL + DIR_BASE_INT,
             'next_float': DIR_BASE_LOCAL + DIR_BASE_FLOAT,
             'next_char': DIR_BASE_LOCAL + DIR_BASE_CHAR,
             'next_bool': DIR_BASE_LOCAL + DIR_BASE_BOOL
         }
+
 
 
 def p_param(p):
@@ -301,18 +307,35 @@ def p_save_param(p):
     '''
     global current_func, dir_func, current_type
     id = p[-1]
-    if(id in dir_func[current_func]['params']):
+    if(id in dir_func[current_func]['vars']):
         error(p, "Parametro ya declarado")
     else:
-        dir_func[current_func]['params'][id] ={
-            'type': current_type
+        dir_func[current_func]['params'].append(current_type)
+        dir_func[current_func]['vars'][id] ={
+            'type' : current_type,
+            'address': get_next_var_address(p)
         }
+
+def p_n_endof_func(p):
+    '''
+    n_endof_func :
+    '''
+    global dir_func, current_func, read_quadruples, dir_quadruples
+    dir_func[current_func]['num_vars_int'] = dir_func[current_func]['next_int'] - DIR_BASE_INT - DIR_BASE_LOCAL
+    dir_func[current_func]['num_vars_float'] = dir_func[current_func]['next_float'] - DIR_BASE_FLOAT - DIR_BASE_LOCAL
+    dir_func[current_func]['num_vars_char'] = dir_func[current_func]['next_char'] - DIR_BASE_CHAR - DIR_BASE_LOCAL
+    dir_func[current_func]['num_vars_bool'] = dir_func[current_func]['next_bool'] - DIR_BASE_BOOL - DIR_BASE_LOCAL
+    temp_quad = ['ENDFUNC', -1, -1, -1]
+    read_quadruples.append(temp_quad);
+    dir_quadruples.append(temp_quad);
+
 
 def p_bloque(p):
   '''
   bloque : LBRACKET mult_estatutos RBRACKET
          | LBRACKET empty RBRACKET
   '''
+
 
 def p_mult_estatutos(p):
   '''
@@ -323,7 +346,7 @@ def p_mult_estatutos(p):
 def p_estatuto(p):
   '''
   estatuto : asigna SEMICOLON
-  		   | llamada
+  		   | llamada SEMICOLON
            | lee
            | escribe
            | condicion
@@ -371,11 +394,72 @@ def p_n_asignQuad(p):
                 error(p, "Tipo no compatible para la operacion de asignación")
 
 
+def p_param_exp(p):
+    '''
+    param_exp : exp n_parameter_action
+              | exp n_parameter_action COMMA param_exp
+    '''
+
+def p_n_parameter_action(p):
+    '''
+    n_parameter_action :
+    '''
+    global pilaOp, pilaTipos, dir_func, curr_Call, read_quadruples, dir_quadruples, parameter_counter
+    argument = pilaOp.pop()
+    argumentType = pilaTipos.pop()
+    if dir_func[curr_Call]['params'][parameter_counter] == argumentType:
+        parameter = 'par' + str(parameter_counter+1)
+        temp_quad = ['PARAM', argument.id, -1, parameter]
+        read_quadruples.append(temp_quad)
+        temp_quad = ['PARAM', argument.address, -1, parameter]
+        dir_quadruples.append(temp_quad)
+        parameter_counter += 1
+    else:
+        error(p, "El parametro "+ str(parameter_counter+1) + " de la funcion es incorrecto");
+
+
+
 
 def p_llamada(p):
   '''
-  llamada : ID LPAREN mult_exp RPAREN
+  llamada : ID n_verify_func LPAREN n_start_pcounter param_exp RPAREN n_last_param_action
+          | ID n_verify_func LPAREN n_start_pcounter RPAREN n_last_param_action
   '''
+
+def p_n_last_param_action(p):
+    '''
+    n_last_param_action :
+    '''
+    global dir_func, read_quadruples, dir_quadruples
+    if(parameter_counter < len(dir_func[curr_Call]['params'])):
+        error(p, 'Se declararon menos parámetros de los requeridos por la función')
+    else:
+        temp_quad = ['GOSUB', curr_Call, -1, dir_func[curr_Call]['starts']]
+        read_quadruples.append(temp_quad)
+        dir_quadruples.append(temp_quad)
+
+
+def p_n_start_pcounter(p):
+    '''
+    n_start_pcounter :
+    '''
+    global parameter_counter, read_quadruples, dir_quadruples, curr_Call
+    parameter_counter = 0
+    temp_quad = ['ERA', curr_Call, -1, -1];
+    dir_quadruples.append(temp_quad)
+    read_quadruples.append(temp_quad)
+
+
+
+def p_n_verify_func(p):
+    '''
+    n_verify_func :
+    '''
+    global dir_func, curr_Call
+    if(p[-1] not in dir_func):
+        error(p, 'La función que se está llamando no existe')
+    else:
+        curr_Call = p[-1]
 
 def p_lee(p):
   '''
