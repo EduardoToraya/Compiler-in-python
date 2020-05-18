@@ -34,3 +34,6 @@ Reporte entrega 4 mayo
 Entrega de atraso en estatutos lineales y entrega de estatutos no lineales.
 I1.- Posible que se requiera agregar un dato más  al cuadruplo con número de cuadruplo.
 I2.- Falta manejar memoria.
+
+Rpeorte entrega 17 mayo:
+Falta pruebas con funciones.
