@@ -849,7 +849,7 @@ def error(p, message):
 
 parser = yacc.yacc()
 
-data = "testFiles/testFile.txt"
+data = "testFiles/pelos.txt"
 f = open(data,'r')
 s = f.read()
 

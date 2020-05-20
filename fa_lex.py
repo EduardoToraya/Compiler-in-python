@@ -59,7 +59,7 @@ reserverd = {
 
 
 ##tokens symbols
-t_ignore = ' \t\n'
+t_ignore = ' \t'
 
 # Symbols
 t_LPAREN = r'\('
@@ -114,6 +114,8 @@ def t_error(t):
     global success
     success = False
     print ("Caracter no valido '%s'" % t.value[0])
+    print("en la línea ", t.lexer.lineno)
     t.lexer.skip(1)
+    sys.exit()
 
 lex.lex()

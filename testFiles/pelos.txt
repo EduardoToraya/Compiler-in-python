@@ -1,7 +1,7 @@
 programa pelos;
 var int i, j, k;
 
-int uno(int j)
+funcion int uno(int j)
 var int i;
 {
 i = j + (k-j*2+j);
@@ -9,11 +9,11 @@ i = j + (k-j*2+j);
     regresa(uno(i-j));
   }
   sino{
-    regresa (i+k);
+    regresa(i+k);
   }
 }
 
-void dos(int i, int j)
+funcion void dos(int i, int j)
 var int x, y;
 {
   x = i + j;
@@ -26,7 +26,7 @@ var int x, y;
 }
 
 principal(){
-  lee(k);
+
   i = 5;
   j = i*2+i;
   dos(j-i, j);

@@ -35,6 +35,7 @@ principal()
   i = i + i;
   c = 'a';
   l = 'b';
+
   desde i=0+5 hasta 5+10 hacer{
     escribe(10);
     escribe (11);
@@ -53,5 +54,4 @@ principal()
   }
 
   escribe(1+2);
-
 }

@@ -20,6 +20,7 @@ DIR_BASE_LOCAL = 10000
 DIR_BASE_CTE = 20000
 
 parameter_counter = 0
+retornoFuncion = None
 
 curr_Call = None
 
@@ -28,8 +29,7 @@ class Operando:
         self.id = None
         self.address = None
 
-contadorCuadruplo = 0;
-currTemp = 0;
+currTemp = 1;
 current_type = ''
 current_exp = None
 current_func = 'global'
@@ -70,15 +70,25 @@ success = True
 ## gramatic rules
 def p_programa(p):
     '''
-    programa : PROGRAMA ID SEMICOLON vars mult_funcion principal
-            | PROGRAMA ID SEMICOLON mult_funcion principal
-            | PROGRAMA ID SEMICOLON vars principal
-            | PROGRAMA ID SEMICOLON principal
+    programa : PROGRAMA p_n_mainJump ID SEMICOLON vars mult_funcion principal
+            | PROGRAMA p_n_mainJump ID SEMICOLON mult_funcion principal
+            | PROGRAMA p_n_mainJump ID SEMICOLON vars principal
+            | PROGRAMA p_n_mainJump ID SEMICOLON principal
     '''
     pprint(dir_func)
     print("inicio de cuadruplos nombres", '\t\t', 'inicio de cuadruplos de direcciones')
     for i, cuadruplo in enumerate(read_quadruples):
         print(i, cuadruplo, " ",'\t\t', i ,dir_quadruples[i])
+
+def p_n_mainJump(p):
+    '''
+    p_n_mainJump :
+    '''
+    global dir_quadruples, read_quadruples
+    temp_quad = ['Goto', -1, -1, None]
+    dir_quadruples.append(temp_quad)
+    read_quadruples.append(temp_quad)
+
 
 def p_principal(p):
     '''
@@ -89,8 +99,11 @@ def p_n_register_glob(p):
     '''
     n_register_glob :
     '''
-    global current_func
+    global current_func, read_quadruples, dir_quadruples
     current_func = 'global'
+    read_quadruples[0][3] = len(read_quadruples)
+    dir_quadruples[0][3] = len(dir_quadruples)
+
 
 # variable declaration
 def p_vars(p):
@@ -286,6 +299,18 @@ def p_n_register_func(p):
             'next_char': DIR_BASE_LOCAL + DIR_BASE_CHAR,
             'next_bool': DIR_BASE_LOCAL + DIR_BASE_BOOL
         }
+        #guardando una variable global con el nombre de la funcion si no es VOID
+        if(current_type != 'void'):
+            current_func = 'global'
+            if p[-1] in dir_func['global']['vars']:
+                error(p, "Una funcion y una variable global no pueden tener el mismo nombre")
+
+            else:
+                dir_func['global']['vars'][p[-1]] ={
+                    'type' : current_type,
+                    'address': get_next_var_address(p)
+                }
+                current_func = p[-1]
 
 
 
@@ -320,7 +345,7 @@ def p_n_endof_func(p):
     '''
     n_endof_func :
     '''
-    global dir_func, current_func, read_quadruples, dir_quadruples
+    global dir_func, current_func, read_quadruples, dir_quadruples, currTemp
     dir_func[current_func]['num_vars_int'] = dir_func[current_func]['next_int'] - DIR_BASE_INT - DIR_BASE_LOCAL
     dir_func[current_func]['num_vars_float'] = dir_func[current_func]['next_float'] - DIR_BASE_FLOAT - DIR_BASE_LOCAL
     dir_func[current_func]['num_vars_char'] = dir_func[current_func]['next_char'] - DIR_BASE_CHAR - DIR_BASE_LOCAL
@@ -328,6 +353,7 @@ def p_n_endof_func(p):
     temp_quad = ['ENDFUNC', -1, -1, -1]
     read_quadruples.append(temp_quad);
     dir_quadruples.append(temp_quad);
+    currTemp = 1
 
 
 def p_bloque(p):
@@ -430,13 +456,29 @@ def p_n_last_param_action(p):
     '''
     n_last_param_action :
     '''
-    global dir_func, read_quadruples, dir_quadruples
+    global dir_func, read_quadruples, dir_quadruples, pilaOp, currTemp
     if(parameter_counter < len(dir_func[curr_Call]['params'])):
         error(p, 'Se declararon menos parámetros de los requeridos por la función')
     else:
         temp_quad = ['GOSUB', curr_Call, -1, dir_func[curr_Call]['starts']]
         read_quadruples.append(temp_quad)
         dir_quadruples.append(temp_quad)
+
+        if(dir_func[curr_Call]['type'] != 'void'):
+            temp_op = Operando()
+            pilaTipos.push(dir_func['global']['vars'][curr_Call]['type'])
+            temporal = 't' + str(currTemp)
+            currTemp +=1;
+            temp_op.id = temporal
+            temp_op.address = get_next_var_address(p)
+            temp_quad = ['=', curr_Call, -1, temp_op.id]
+            read_quadruples.append(temp_quad)
+            temp_quad = ['=', temp_op.address, -1, temp_op.address]
+            dir_quadruples.append(temp_quad)
+            pilaOp.push(temp_op)
+            #temp_op.address = get_next_var_address(p);
+
+
 
 
 def p_n_start_pcounter(p):
@@ -463,7 +505,7 @@ def p_n_verify_func(p):
 
 def p_lee(p):
   '''
-  lee : LEE LPAREN variable RPAREN
+  lee : LEE LPAREN variable RPAREN SEMICOLON
   '''
 
 def p_escribe(p):
@@ -476,14 +518,12 @@ def p_n_escribeExp(p):
     '''
     n_escribeExp :
     '''
-    global dir_func, read_quadruples, current_exp
+    global dir_func, read_quadruples, current_exp, pilaOp, dir_quadruples
     operando = pilaOp.pop();
     currQuad = ['print', -1, -1, operando.id]
     read_quadruples.append(currQuad)
     currQuad = ['print', -1, -1, operando.address]
     dir_quadruples.append(currQuad)
-
-
 
 def p_mult_cte_s(p):
   '''
@@ -719,7 +759,7 @@ def p_n_Operador(p):
 
 def p_f(p):
   '''
-  f : LPAREN n_FF mult_exp RPAREN n_FF
+  f : LPAREN n_start_FF mult_exp RPAREN n_end_FF
   	| n_tempTypeI CTE_I n_directPrint
     | n_tempTypeF CTE_F n_directPrint
     | n_tempTypeC CTE_C n_directPrint
@@ -763,12 +803,23 @@ def p_n_directPrint(p):
     pilaOp.push(operador)
     pilaTipos.push(current_type)
 
-def p_n_FF(p):
+def p_n_start_FF(p):
     '''
-    n_FF :
+    n_start_FF :
     '''
     global popper, pilaOp, pilaTipos
     popper.push(p[-1])
+
+def p_n_end_FF(p):
+    '''
+    n_end_FF :
+    '''
+    global popper, pilaOp, pilaTipos
+    aux = popper.peek();
+    if aux == '(':
+        popper.pop();
+    else:
+        error(p, "Error de paréntesis inconsistentes")
 
 def p_condicion(p):
   '''
@@ -911,14 +962,30 @@ def p_n_endFor(p):
 
 def p_retorno(p):
   '''
-  retorno : REGRESA mult_exp SEMICOLON
+  retorno : REGRESA LPAREN mult_exp n_regresaExp RPAREN SEMICOLON
   '''
+
+def p_n_regresaExp(p):
+    '''
+    n_regresaExp :
+    '''
+    global dir_func, read_quadruples, current_exp, current_type, current_func, dir_quadruples, pilaTipos
+    operando = pilaOp.pop();
+    if(pilaTipos.pop() == dir_func[current_func]['type']):
+      temp_quad = ['RETURN', -1, -1, operando.id]
+      read_quadruples.append(temp_quad)
+      temp_quad = ['RETURN', -1, -1, operando.address]
+      dir_quadruples.append(temp_quad)
+    else:
+      error(p, "La función está regresando un tipo distinto al de la función")
+
 
 ##error function for parser
 def p_error(p):
     global success
     success = False
     print('SyntaxError', p.value)
+    print("at line ", p.lineno)
     #añadir en que linea
     sys.exit()
 
@@ -933,7 +1000,7 @@ def error(p, message):
 
 parser = yacc.yacc()
 
-data = "testFiles/testFile.txt"
+data = "testFiles/pelos.txt"
 f = open(data,'r')
 s = f.read()
 

@@ -1,0 +1,11 @@
+programa patito;
+var
+int i, j, k;
+char c ,l , m;
+
+principal()
+{
+  i = 3+(j+k);
+
+  escribe(1+2);
+}
