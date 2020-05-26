@@ -30,4 +30,5 @@ principal(){
   i = 5;
   j = i*2+i;
   dos(j-i, j);
+  escribe("Hola");
 }

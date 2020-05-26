@@ -37,3 +37,9 @@ I2.- Falta manejar memoria.
 
 Rpeorte entrega 17 mayo:
 Faltan arreglos y máquina virtual.
+Se me olvido subirlo.
+
+Reporte 25 Mayo:
+Avance hasta funciones de la maquina virtual. incluye desarrollo funciones
+Falta: desarrollar arreglos en maquina virtual, probar arreglos en parser,
+documentación.

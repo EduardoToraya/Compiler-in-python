@@ -13,7 +13,7 @@ tokens = [
     'RSQUARE',      ## ]
     'COMMA',        ## ,
     'SEMICOLON',    ## ;
-    'COMMENT',      ## %%
+    'COMMENT',      ## #
     'CTE_I',        ## 123
     'CTE_F',        ## 123.123
     'CTE_C',        ## a
@@ -70,7 +70,7 @@ t_LSQUARE = r'\['
 t_RSQUARE = r'\]'
 t_COMMA = r'\,'
 t_SEMICOLON = r'\;'
-t_COMMENT = r'\%%'
+t_COMMENT = r'\#.*'
 
 # Comparison
 t_EQUAL = r'\='

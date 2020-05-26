@@ -1,0 +1,29 @@
+programa patito;
+var
+int i, j, k;
+char c ,l , m;
+float arreglo[10], arreglo2[5];
+
+funcion void inicia1(int z, int zac, char asdasdas)
+var
+int h, i;
+{
+  escribe(11);
+}
+
+principal()
+{
+  k = 68+1;
+  lee(k);
+  j = 4 + 5;
+  c = 'a';
+  l = 'b';
+  escribe(c <> l);
+  escribe(c == l);
+  escribe(j/3.7*3 > 3);
+  escribe(10);
+  escribe(j*j*10);
+  escribe(c);
+  escribe(k);
+  escribe('hola');
+}

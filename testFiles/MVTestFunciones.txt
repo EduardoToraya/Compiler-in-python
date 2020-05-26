@@ -1,0 +1,60 @@
+programa patito;
+var
+int i;
+int x;
+
+
+funcion void sinParam()
+var
+int i;
+{
+  i = 10;
+  escribe(i);
+}
+
+funcion void conParam(char c){
+  escribe(c);
+}
+
+funcion int fibo(int x)
+{
+  sinParam();
+  si (x == 1 | x == 0) entonces{
+    regresa(x);
+  }
+  sino{
+    regresa(fibo(x-1) + fibo(x-2));
+  }
+}
+
+funcion int fact(int x)
+{
+  si(x < 0) entonces{
+    regresa(0);
+  }
+  si(x > 1) entonces{
+    regresa (x*fact(x-1));
+  }
+  sino{
+    regresa(1);
+  }
+}
+
+principal()
+{
+  escribe('posterior');
+  sinParam();
+  conParam('asd');
+  x = 10;
+  escribe('fibbonacci');
+  desde i=0 hasta x hacer{
+    escribe(fibo(i));
+    i = i+1;
+  }
+
+  escribe('factorial');
+  desde i=0 hasta x hacer{
+    escribe(fact(i));
+    i = i+1;
+  }
+}

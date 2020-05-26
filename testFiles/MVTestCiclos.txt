@@ -1,0 +1,36 @@
+programa patito;
+var
+int i, j, k;
+char c ,l , m;
+
+principal()
+{
+  i = 10;
+  j = 25;
+  k = 9;
+  mientras (i > 0) haz{
+    escribe(k);
+    mientras(k > 0) haz{
+      escribe(i);
+      k = k-3;
+      escribe(k);
+    }
+    i = i-1;
+  }
+
+  si (5>4) entonces
+  {
+    escribe(1+2+3);
+  }
+  sino{
+    escribe(2+5+2);
+  }
+
+  escribe(k);
+
+  desde i=0+5 hasta 5+10 hacer{
+    escribe(i);
+    i = i+1;
+  }
+
+}

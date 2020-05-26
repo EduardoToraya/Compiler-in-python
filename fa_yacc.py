@@ -18,7 +18,9 @@ DIR_LENGTH = 2500
 DIR_BASE_GLOBAL = 0
 DIR_BASE_LOCAL = 10000
 DIR_BASE_CTE = 20000
+DIR_BASE_POINTER = 30000
 
+address_func_var_global = None
 parameter_counter = 0
 retornoFuncion = None
 
@@ -30,6 +32,7 @@ class Operando:
         self.address = None
 
 currTemp = 1;
+currTempArr = 1;
 current_type = ''
 current_exp = None
 current_func = 'global'
@@ -50,6 +53,12 @@ dir_func = {
         'cte': {
             #'a': 1000 Formato compilación
             #1000: 'a' Formato maquina virtual
+        }
+    },
+    'array_pointers' : {
+        'next_pointer' : DIR_BASE_POINTER,
+        'pointer': {
+
         }
     }
 }
@@ -79,6 +88,7 @@ def p_programa(p):
     print("inicio de cuadruplos nombres", '\t\t', 'inicio de cuadruplos de direcciones')
     for i, cuadruplo in enumerate(read_quadruples):
         print(i, cuadruplo, " ",'\t\t', i ,dir_quadruples[i])
+
 
 def p_n_mainJump(p):
     '''
@@ -144,7 +154,8 @@ def p_n_save_array(p):
     else:
         dir_func[current_func]['vars'][id] ={
             'type' : current_type,
-            'size' : size
+            'address' : get_next_arr_address(p, int(size)),
+            'size' : int(size)
         }
 
 def p_n_save_var(p):
@@ -160,6 +171,29 @@ def p_n_save_var(p):
             'type' : current_type,
             'address': get_next_var_address(p)
         }
+
+def get_next_arr_address(p, size):
+    global dir_func
+    if current_func == 'global':
+        base = DIR_BASE_GLOBAL
+    else:
+        base = DIR_BASE_LOCAL
+
+    if(current_type == 'int'):
+        baseType = 0;
+    elif(current_type == 'float'):
+        baseType = 2500;
+    elif(current_type == 'char'):
+        baseType = 5000;
+    else:
+        baseType = 7500;
+
+    if dir_func[current_func]['next_' + current_type] + size - base - baseType < DIR_LENGTH:
+        aux = dir_func[current_func]['next_' + current_type]
+        dir_func[current_func]['next_' + current_type] += size
+        return aux
+    else:
+        error(p, "Numero de variables en su limite")
 
 def get_next_var_address(p):
     global dir_func
@@ -184,9 +218,21 @@ def get_next_var_address(p):
     else:
         error(p, "Numero de variables en su limite")
 
+def get_next_pointer_address(p):
+    global dir_func, DIR_BASE_POINTER
+    if dir_func['array_pointers']['next_pointer'] - DIR_BASE_POINTER < DIR_LENGTH*4:
+        aux = dir_func['array_pointers']['next_pointer']
+        dir_func['array_pointers']['next_pointer']  += 1
+        dir_func['array_pointers']['pointer'][aux] = {
+            'points_to' : None
+        }
+        return aux
+    else:
+        error(p, "Numero de variables de arreglos en su limite")
+
 
 def get_next_cte_address(p, id):
-    global dir_func
+    global dir_func, current_type
     if (id in dir_func['constants']['cte']):
         return dir_func['constants']['cte'][id]['address'];
     else:
@@ -209,8 +255,6 @@ def get_next_cte_address(p, id):
         else:
             error(p, "Numero de constantes " + current_type + " en su límite")
 
-
-
 def p_tipo_simple(p):
     '''
     tipo_simple : INT n_save_type
@@ -231,13 +275,70 @@ def p_empty(p):
 
 def p_variable(p):
     '''
-    variable : ID LSQUARE mult_exp RSQUARE
-             | ID p_n_getVarVal
+    variable : ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+             | ID n_getVarVal
     '''
+
+def p_n_arr_quad(p):
+    '''
+    n_arr_quad :
+    '''
+    global read_quadruples, dir_quadruples, pilaTipos, currTemp, current_type, current_func, currTempArr
+    temp_exp = pilaOp.pop()
+    temp_array = pilaOp.pop()
+    temp_exp_type = pilaTipos.pop()
+    if(temp_exp_type != 'int'):
+        error(p, 'El indice del arreglo debe ser un íntegro')
+    id = temp_array.id
+    if(id in dir_func[current_func]['vars']):
+        aux = current_func
+    else:
+        aux = 'global'
+
+    current_type = 'int'
+    temp_arr_limit = dir_func[aux]['vars'][temp_array.id]['size']
+    temp_cte = get_next_cte_address(p, str(temp_arr_limit))
+
+    temp_quad = ['VERIFY', temp_exp.id, -1, temp_arr_limit]
+    read_quadruples.append(temp_quad)
+    temp_quad = ['VERIFY', temp_exp.address, -1, temp_cte]
+    dir_quadruples.append(temp_quad)
+
+    temp_cte = get_next_cte_address(p, str(temp_array.address))
+    dir_array = get_next_pointer_address(p)
+
+    temp_quad = ['+', temp_exp.id, temp_array.id, dir_array]
+    read_quadruples.append(temp_quad)
+    temp_quad = ['+', temp_array.address, temp_cte, dir_array]
+    dir_quadruples.append(temp_quad)
+
+    temporalArr = 't' + str(currTempArr)
+    currTempArr += 1;
+    toPush = Operando()
+    toPush.id = temporalArr
+    toPush.address = dir_array
+    pilaOp.push(toPush)
+
+
+def p_n_hasDim(p):
+    '''
+    n_hasDim :
+    '''
+    global dir_func, current_func, pilaOp, pilaTipos
+    temp_op = pilaOp.peek()
+    #know which function it is in
+    if(temp_op.id in dir_func[current_func]['vars']):
+        aux = current_func
+    else:
+        aux = 'global'
+
+    if(len(dir_func[aux]['vars'][temp_op.id]) < 3):
+        error(p, 'La variable que se está tratando de accesar requiere dimensión')
+
 
 def p_n_getVarVal(p):
     '''
-    p_n_getVarVal :
+    n_getVarVal :
     '''
     global current_exp, pilaOp, dir_func, current_func, pilaTipos
     #guarda exp para funciones posteriores
@@ -422,8 +523,8 @@ def p_n_asignQuad(p):
 
 def p_param_exp(p):
     '''
-    param_exp : exp n_parameter_action
-              | exp n_parameter_action COMMA param_exp
+    param_exp : mult_exp n_parameter_action
+              | mult_exp n_parameter_action COMMA param_exp
     '''
 
 def p_n_parameter_action(p):
@@ -437,61 +538,78 @@ def p_n_parameter_action(p):
         parameter = 'par' + str(parameter_counter+1)
         temp_quad = ['PARAM', argument.id, -1, parameter]
         read_quadruples.append(temp_quad)
-        temp_quad = ['PARAM', argument.address, -1, parameter]
+
+        #obteniendo la direccion del parametro
+        Address_param = getParamAddress(parameter_counter, argumentType)
+
+        temp_quad = ['PARAM', argument.address, -1, Address_param]
         dir_quadruples.append(temp_quad)
         parameter_counter += 1
     else:
         error(p, "El parametro "+ str(parameter_counter+1) + " de la funcion es incorrecto");
 
-
+def getParamAddress(counter, type):
+    global current_func
+    tempBase = 0
+    if type == 'int':
+        tempBase = 0;
+    elif type == 'float':
+        tempBase = 2500;
+    else:
+        tempBase = 5000;
+    return counter + tempBase + DIR_BASE_LOCAL
 
 
 def p_llamada(p):
   '''
-  llamada : ID n_verify_func LPAREN n_start_pcounter param_exp RPAREN n_last_param_action
-          | ID n_verify_func LPAREN n_start_pcounter RPAREN n_last_param_action
+  llamada : ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
+          | ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
   '''
 
 def p_n_last_param_action(p):
     '''
     n_last_param_action :
     '''
-    global dir_func, read_quadruples, dir_quadruples, pilaOp, currTemp
+    global dir_func, read_quadruples, dir_quadruples, pilaOp, currTemp, current_type, parameter_counter, address_func_var_global
     if(parameter_counter < len(dir_func[curr_Call]['params'])):
         error(p, 'Se declararon menos parámetros de los requeridos por la función')
     else:
         temp_quad = ['GOSUB', curr_Call, -1, dir_func[curr_Call]['starts']]
         read_quadruples.append(temp_quad)
+        #add call address
         dir_quadruples.append(temp_quad)
 
         if(dir_func[curr_Call]['type'] != 'void'):
+            address_func_var_global = dir_func['global']['vars'][curr_Call]['address']
+            dir_quadruples.pop()
+            temp_quad = ['GOSUB', address_func_var_global, -1, dir_func[curr_Call]['starts']]
+            dir_quadruples.append(temp_quad)
             temp_op = Operando()
             pilaTipos.push(dir_func['global']['vars'][curr_Call]['type'])
             temporal = 't' + str(currTemp)
             currTemp +=1;
             temp_op.id = temporal
+            current_type = dir_func[curr_Call]['type']
             temp_op.address = get_next_var_address(p)
             temp_quad = ['=', curr_Call, -1, temp_op.id]
             read_quadruples.append(temp_quad)
-            temp_quad = ['=', temp_op.address, -1, temp_op.address]
+            temp_quad = ['=', address_func_var_global, -1, temp_op.address]
+
             dir_quadruples.append(temp_quad)
             pilaOp.push(temp_op)
-            #temp_op.address = get_next_var_address(p);
-
-
-
 
 def p_n_start_pcounter(p):
     '''
     n_start_pcounter :
     '''
-    global parameter_counter, read_quadruples, dir_quadruples, curr_Call
+    global dir_func, parameter_counter, read_quadruples, dir_quadruples, curr_Call, address_func_var_global
     parameter_counter = 0
     temp_quad = ['ERA', curr_Call, -1, -1];
-    dir_quadruples.append(temp_quad)
     read_quadruples.append(temp_quad)
-
-
+    #if(dir_func[curr_Call]['type'] != 'void'):
+    #    address_func_var_global = dir_func['global']['vars'][curr_Call]['address']
+        #temp_quad = ['ERA', address_func_var_global, -1, -1];
+    dir_quadruples.append(temp_quad)
 
 def p_n_verify_func(p):
     '''
@@ -507,6 +625,14 @@ def p_lee(p):
   '''
   lee : LEE LPAREN variable RPAREN SEMICOLON
   '''
+  global dir_func, dir_quadruples, read_quadruples, pilaOp
+  elemento = pilaOp.pop()
+
+  temp_quad = ['read', -1, -1, elemento.id]
+  read_quadruples.append(temp_quad)
+  temp_quad = ['read', -1, -1, elemento.address]
+  dir_quadruples.append(temp_quad)
+
 
 def p_escribe(p):
   '''
@@ -760,14 +886,14 @@ def p_n_Operador(p):
 def p_f(p):
   '''
   f : LPAREN n_start_FF mult_exp RPAREN n_end_FF
-  	| n_tempTypeI CTE_I n_directPrint
+    | n_tempTypeI MINUS CTE_I n_directPrint_neg
+    | n_tempTypeF MINUS CTE_F n_directPrint_neg
+    | n_tempTypeI CTE_I n_directPrint
     | n_tempTypeF CTE_F n_directPrint
     | n_tempTypeC CTE_C n_directPrint
     | variable
     | llamada
   '''
-
-  #hacer regla individual para cada tipo de cte usando las reglas de abajo
 
 def p_n_tempTypeI(p):
     '''
@@ -790,6 +916,17 @@ def p_n_tempTypeC(p):
     global current_type
     current_type = "char"
 
+def p_n_directPrint_neg(p):
+    '''
+    n_directPrint_neg :
+    '''
+    global current_exp, pilaOp, pilaTipos, current_type
+    current_exp = p[-1]
+    operador = Operando();
+    operador.id = '-' + current_exp;
+    operador.address = get_next_cte_address(p, operador.id);
+    pilaOp.push(operador)
+    pilaTipos.push(current_type)
 
 def p_n_directPrint(p):
     '''
@@ -1000,11 +1137,24 @@ def error(p, message):
 
 parser = yacc.yacc()
 
-data = "testFiles/pelos.txt"
-f = open(data,'r')
-s = f.read()
+# nombre archivo, nombre programa
+if len(sys.argv) != 2:
+    print('Please send a file.')
+    raise SyntaxError('Compiler needs 1 file.')
 
-parser.parse(s)
+program_name = sys.argv[1]
+# Compile program.
+with open(program_name, 'r') as file:
+    try:
+        parser.parse(file.read())
+        export = {
+            'tabla_func': dir_func,
+            'dir_quadruples': dir_quadruples
+        }
+        with open(program_name + '.obj', 'w') as file1:
+            file1.write(str(export))
+    except:
+        pass
 
 if success == True:
     print("El archivo se ha aceptado")

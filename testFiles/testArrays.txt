@@ -1,0 +1,20 @@
+programa patito;
+var
+int i, j, p;
+int arreglo[10];
+
+
+funcion void inicia(int y)
+var int x;
+{
+  x = -1;
+  mientras(x < 11) haz{
+    arreglo[5] = y*x;
+  }
+}
+
+principal(){
+inicia(10);
+fact(10);
+escribe(1);
+}
