@@ -14,6 +14,7 @@ int h, i;
 principal()
 {
   k = 68+1;
+  escribe('introduce el valor de k');
   lee(k);
   j = 4 + 5;
   c = 'a';
@@ -24,6 +25,7 @@ principal()
   escribe(10);
   escribe(j*j*10);
   escribe(c);
+  escribe('escribe el dato de input: ');
   escribe(k);
   escribe('hola');
 }

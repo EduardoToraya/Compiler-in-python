@@ -43,3 +43,6 @@ Reporte 25 Mayo:
 Avance hasta funciones de la maquina virtual. incluye desarrollo funciones
 Falta: desarrollar arreglos en maquina virtual, probar arreglos en parser,
 documentación.
+
+Reporte 31 mayo.
+Compilador terminado. Con pruebas.

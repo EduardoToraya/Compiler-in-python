@@ -28,7 +28,7 @@ Rule 18    tipo_simple -> FLOAT n_save_type
 Rule 19    tipo_simple -> CHAR n_save_type
 Rule 20    n_save_type -> <empty>
 Rule 21    empty -> <empty>
-Rule 22    variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+Rule 22    variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
 Rule 23    variable -> ID n_getVarVal
 Rule 24    n_arr_quad -> <empty>
 Rule 25    n_hasDim -> <empty>
@@ -216,7 +216,7 @@ n_directPrint_neg    : 99 100
 n_endFor             : 122
 n_endIfQuad          : 113 114
 n_endWhile           : 118
-n_end_FF             : 62 63 98
+n_end_FF             : 22 62 63 98
 n_endof_func         : 29 30 31 32 33 34 35 36
 n_escribeExp         : 68 69
 n_evalExp            : 118
@@ -235,7 +235,7 @@ n_save_array         : 14
 n_save_type          : 17 18 19 31 32 35 36
 n_save_var           : 13
 n_startCicle         : 118 122
-n_start_FF           : 62 63 98
+n_start_FF           : 22 62 63 98
 n_start_pcounter     : 62 63
 n_sumQuad            : 89 90 91
 n_tempTypeC          : 103
@@ -781,7 +781,7 @@ state 46
     (122) ciclo_f -> . DESDE asigna n_startCicle HASTA mult_exp n_evalExp_for HACER bloque n_endFor
     (56) mult_asigna -> . variable EQUAL n_Operador mult_exp n_asignQuad
     (57) mult_asigna -> . variable EQUAL n_Operador mult_asigna n_asignQuad
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
 
     RBRACKET        reduce using rule 21 (empty -> .)
@@ -884,7 +884,7 @@ state 52
     (122) ciclo_f -> . DESDE asigna n_startCicle HASTA mult_exp n_evalExp_for HACER bloque n_endFor
     (56) mult_asigna -> . variable EQUAL n_Operador mult_exp n_asignQuad
     (57) mult_asigna -> . variable EQUAL n_Operador mult_asigna n_asignQuad
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
 
     RBRACKET        reduce using rule 45 (mult_estatutos -> estatuto .)
@@ -1019,7 +1019,7 @@ state 62
 
     (62) llamada -> ID . n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> ID . n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
-    (22) variable -> ID . n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> ID . n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> ID . n_getVarVal
     (66) n_verify_func -> .
     (26) n_getVarVal -> .
@@ -1084,7 +1084,7 @@ state 69
     (55) asigna -> . mult_asigna
     (56) mult_asigna -> . variable EQUAL n_Operador mult_exp n_asignQuad
     (57) mult_asigna -> . variable EQUAL n_Operador mult_asigna n_asignQuad
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
 
     ID              shift and go to state 89
@@ -1233,7 +1233,7 @@ state 80
 
 state 81
 
-    (22) variable -> ID n_getVarVal . LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> ID n_getVarVal . LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> ID n_getVarVal .
 
     LSQUARE         shift and go to state 98
@@ -1254,14 +1254,14 @@ state 81
     COMMA           reduce using rule 23 (variable -> ID n_getVarVal .)
     SEMICOLON       reduce using rule 23 (variable -> ID n_getVarVal .)
     HASTA           reduce using rule 23 (variable -> ID n_getVarVal .)
-    RSQUARE         reduce using rule 23 (variable -> ID n_getVarVal .)
     HACER           reduce using rule 23 (variable -> ID n_getVarVal .)
+    RSQUARE         reduce using rule 23 (variable -> ID n_getVarVal .)
 
 
 state 82
 
     (67) lee -> LEE LPAREN . variable RPAREN SEMICOLON
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
 
     ID              shift and go to state 89
@@ -1319,7 +1319,7 @@ state 84
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -1383,7 +1383,7 @@ state 85
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -1451,7 +1451,7 @@ state 87
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -1490,7 +1490,7 @@ state 88
 
 state 89
 
-    (22) variable -> ID . n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> ID . n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> ID . n_getVarVal
     (26) n_getVarVal -> .
 
@@ -1592,17 +1592,17 @@ state 97
 
 state 98
 
-    (22) variable -> ID n_getVarVal LSQUARE . n_hasDim mult_exp RSQUARE n_arr_quad
-    (25) n_hasDim -> .
+    (22) variable -> ID n_getVarVal LSQUARE . n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
+    (111) n_start_FF -> .
 
-    LPAREN          reduce using rule 25 (n_hasDim -> .)
-    ID              reduce using rule 25 (n_hasDim -> .)
-    MINUS           reduce using rule 25 (n_hasDim -> .)
-    CTE_I           reduce using rule 25 (n_hasDim -> .)
-    CTE_F           reduce using rule 25 (n_hasDim -> .)
-    CTE_C           reduce using rule 25 (n_hasDim -> .)
+    LPAREN          reduce using rule 111 (n_start_FF -> .)
+    ID              reduce using rule 111 (n_start_FF -> .)
+    MINUS           reduce using rule 111 (n_start_FF -> .)
+    CTE_I           reduce using rule 111 (n_start_FF -> .)
+    CTE_F           reduce using rule 111 (n_start_FF -> .)
+    CTE_C           reduce using rule 111 (n_start_FF -> .)
 
-    n_hasDim                       shift and go to state 130
+    n_start_FF                     shift and go to state 130
 
 state 99
 
@@ -1621,7 +1621,7 @@ state 100
     (57) mult_asigna -> . variable EQUAL n_Operador mult_asigna n_asignQuad
     (75) exp -> . t_exp n_orQuad
     (76) exp -> . t_exp n_orQuad OR n_Operador exp
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (78) t_exp -> . g_exp n_andQuad
     (79) t_exp -> . g_exp n_andQuad AND n_Operador t_exp
@@ -1717,8 +1717,8 @@ state 104
     RPAREN          reduce using rule 73 (mult_exp -> exp .)
     SEMICOLON       reduce using rule 73 (mult_exp -> exp .)
     HASTA           reduce using rule 73 (mult_exp -> exp .)
-    RSQUARE         reduce using rule 73 (mult_exp -> exp .)
     HACER           reduce using rule 73 (mult_exp -> exp .)
+    RSQUARE         reduce using rule 73 (mult_exp -> exp .)
     COMMA           shift and go to state 138
 
   ! COMMA           [ reduce using rule 73 (mult_exp -> exp .) ]
@@ -1744,8 +1744,8 @@ state 106
     RPAREN          reduce using rule 77 (n_orQuad -> .)
     SEMICOLON       reduce using rule 77 (n_orQuad -> .)
     HASTA           reduce using rule 77 (n_orQuad -> .)
-    RSQUARE         reduce using rule 77 (n_orQuad -> .)
     HACER           reduce using rule 77 (n_orQuad -> .)
+    RSQUARE         reduce using rule 77 (n_orQuad -> .)
 
     n_orQuad                       shift and go to state 140
 
@@ -1761,8 +1761,8 @@ state 107
     RPAREN          reduce using rule 80 (n_andQuad -> .)
     SEMICOLON       reduce using rule 80 (n_andQuad -> .)
     HASTA           reduce using rule 80 (n_andQuad -> .)
-    RSQUARE         reduce using rule 80 (n_andQuad -> .)
     HACER           reduce using rule 80 (n_andQuad -> .)
+    RSQUARE         reduce using rule 80 (n_andQuad -> .)
 
     n_andQuad                      shift and go to state 141
 
@@ -1789,8 +1789,8 @@ state 108
     RPAREN          reduce using rule 88 (n_compareQuad -> .)
     SEMICOLON       reduce using rule 88 (n_compareQuad -> .)
     HASTA           reduce using rule 88 (n_compareQuad -> .)
-    RSQUARE         reduce using rule 88 (n_compareQuad -> .)
     HACER           reduce using rule 88 (n_compareQuad -> .)
+    RSQUARE         reduce using rule 88 (n_compareQuad -> .)
 
     n_compareQuad                  shift and go to state 142
 
@@ -1815,8 +1815,8 @@ state 109
     RPAREN          reduce using rule 92 (n_sumQuad -> .)
     SEMICOLON       reduce using rule 92 (n_sumQuad -> .)
     HASTA           reduce using rule 92 (n_sumQuad -> .)
-    RSQUARE         reduce using rule 92 (n_sumQuad -> .)
     HACER           reduce using rule 92 (n_sumQuad -> .)
+    RSQUARE         reduce using rule 92 (n_sumQuad -> .)
 
     n_sumQuad                      shift and go to state 143
 
@@ -1843,8 +1843,8 @@ state 110
     RPAREN          reduce using rule 96 (n_multQuad -> .)
     SEMICOLON       reduce using rule 96 (n_multQuad -> .)
     HASTA           reduce using rule 96 (n_multQuad -> .)
-    RSQUARE         reduce using rule 96 (n_multQuad -> .)
     HACER           reduce using rule 96 (n_multQuad -> .)
+    RSQUARE         reduce using rule 96 (n_multQuad -> .)
 
     n_multQuad                     shift and go to state 144
 
@@ -1891,10 +1891,10 @@ state 114
     OR              reduce using rule 104 (f -> variable .)
     COMMA           reduce using rule 104 (f -> variable .)
     RPAREN          reduce using rule 104 (f -> variable .)
-    RSQUARE         reduce using rule 104 (f -> variable .)
     SEMICOLON       reduce using rule 104 (f -> variable .)
     HASTA           reduce using rule 104 (f -> variable .)
     HACER           reduce using rule 104 (f -> variable .)
+    RSQUARE         reduce using rule 104 (f -> variable .)
 
 
 state 115
@@ -1917,13 +1917,13 @@ state 115
     RPAREN          reduce using rule 105 (f -> llamada .)
     SEMICOLON       reduce using rule 105 (f -> llamada .)
     HASTA           reduce using rule 105 (f -> llamada .)
-    RSQUARE         reduce using rule 105 (f -> llamada .)
     HACER           reduce using rule 105 (f -> llamada .)
+    RSQUARE         reduce using rule 105 (f -> llamada .)
 
 
 state 116
 
-    (22) variable -> ID . n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> ID . n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> ID . n_getVarVal
     (62) llamada -> ID . n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> ID . n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -1948,8 +1948,8 @@ state 116
     EQUAL           reduce using rule 26 (n_getVarVal -> .)
     SEMICOLON       reduce using rule 26 (n_getVarVal -> .)
     HASTA           reduce using rule 26 (n_getVarVal -> .)
-    RSQUARE         reduce using rule 26 (n_getVarVal -> .)
     HACER           reduce using rule 26 (n_getVarVal -> .)
+    RSQUARE         reduce using rule 26 (n_getVarVal -> .)
     LPAREN          reduce using rule 66 (n_verify_func -> .)
 
     n_getVarVal                    shift and go to state 81
@@ -1996,7 +1996,7 @@ state 118
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -2139,64 +2139,17 @@ state 129
 
 state 130
 
-    (22) variable -> ID n_getVarVal LSQUARE n_hasDim . mult_exp RSQUARE n_arr_quad
-    (73) mult_exp -> . exp
-    (74) mult_exp -> . exp COMMA mult_exp
-    (75) exp -> . t_exp n_orQuad
-    (76) exp -> . t_exp n_orQuad OR n_Operador exp
-    (78) t_exp -> . g_exp n_andQuad
-    (79) t_exp -> . g_exp n_andQuad AND n_Operador t_exp
-    (81) g_exp -> . m_exp n_compareQuad
-    (82) g_exp -> . m_exp n_compareQuad LESSTHAN n_Operador g_exp
-    (83) g_exp -> . m_exp n_compareQuad LESSEQUAL n_Operador g_exp
-    (84) g_exp -> . m_exp n_compareQuad GREATERTHAN n_Operador g_exp
-    (85) g_exp -> . m_exp n_compareQuad GREATEREQUAL n_Operador g_exp
-    (86) g_exp -> . m_exp n_compareQuad SAME n_Operador g_exp
-    (87) g_exp -> . m_exp n_compareQuad NOEQUAL n_Operador g_exp
-    (89) m_exp -> . t n_sumQuad
-    (90) m_exp -> . t n_sumQuad PLUS n_Operador m_exp
-    (91) m_exp -> . t n_sumQuad MINUS n_Operador m_exp
-    (93) t -> . f n_multQuad
-    (94) t -> . f n_multQuad MULT n_Operador t
-    (95) t -> . f n_multQuad DIV n_Operador t
-    (98) f -> . LPAREN n_start_FF mult_exp RPAREN n_end_FF
-    (99) f -> . n_tempTypeI MINUS CTE_I n_directPrint_neg
-    (100) f -> . n_tempTypeF MINUS CTE_F n_directPrint_neg
-    (101) f -> . n_tempTypeI CTE_I n_directPrint
-    (102) f -> . n_tempTypeF CTE_F n_directPrint
-    (103) f -> . n_tempTypeC CTE_C n_directPrint
-    (104) f -> . variable
-    (105) f -> . llamada
-    (106) n_tempTypeI -> .
-    (107) n_tempTypeF -> .
-    (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
-    (23) variable -> . ID n_getVarVal
-    (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
-    (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
+    (22) variable -> ID n_getVarVal LSQUARE n_start_FF . n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
+    (25) n_hasDim -> .
 
-  ! reduce/reduce conflict for MINUS resolved using rule 106 (n_tempTypeI -> .)
-    LPAREN          shift and go to state 101
-    MINUS           reduce using rule 106 (n_tempTypeI -> .)
-    CTE_I           reduce using rule 106 (n_tempTypeI -> .)
-    CTE_F           reduce using rule 107 (n_tempTypeF -> .)
-    CTE_C           reduce using rule 108 (n_tempTypeC -> .)
-    ID              shift and go to state 116
+    LPAREN          reduce using rule 25 (n_hasDim -> .)
+    ID              reduce using rule 25 (n_hasDim -> .)
+    MINUS           reduce using rule 25 (n_hasDim -> .)
+    CTE_I           reduce using rule 25 (n_hasDim -> .)
+    CTE_F           reduce using rule 25 (n_hasDim -> .)
+    CTE_C           reduce using rule 25 (n_hasDim -> .)
 
-  ! MINUS           [ reduce using rule 107 (n_tempTypeF -> .) ]
-
-    mult_exp                       shift and go to state 163
-    exp                            shift and go to state 104
-    t_exp                          shift and go to state 106
-    g_exp                          shift and go to state 107
-    m_exp                          shift and go to state 108
-    t                              shift and go to state 109
-    f                              shift and go to state 110
-    n_tempTypeI                    shift and go to state 111
-    n_tempTypeF                    shift and go to state 112
-    n_tempTypeC                    shift and go to state 113
-    variable                       shift and go to state 114
-    llamada                        shift and go to state 115
+    n_hasDim                       shift and go to state 163
 
 state 131
 
@@ -2282,7 +2235,7 @@ state 135
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -2357,7 +2310,7 @@ state 138
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -2404,8 +2357,8 @@ state 140
     RPAREN          reduce using rule 75 (exp -> t_exp n_orQuad .)
     SEMICOLON       reduce using rule 75 (exp -> t_exp n_orQuad .)
     HASTA           reduce using rule 75 (exp -> t_exp n_orQuad .)
-    RSQUARE         reduce using rule 75 (exp -> t_exp n_orQuad .)
     HACER           reduce using rule 75 (exp -> t_exp n_orQuad .)
+    RSQUARE         reduce using rule 75 (exp -> t_exp n_orQuad .)
     OR              shift and go to state 172
 
 
@@ -2419,8 +2372,8 @@ state 141
     RPAREN          reduce using rule 78 (t_exp -> g_exp n_andQuad .)
     SEMICOLON       reduce using rule 78 (t_exp -> g_exp n_andQuad .)
     HASTA           reduce using rule 78 (t_exp -> g_exp n_andQuad .)
-    RSQUARE         reduce using rule 78 (t_exp -> g_exp n_andQuad .)
     HACER           reduce using rule 78 (t_exp -> g_exp n_andQuad .)
+    RSQUARE         reduce using rule 78 (t_exp -> g_exp n_andQuad .)
     AND             shift and go to state 173
 
 
@@ -2440,8 +2393,8 @@ state 142
     RPAREN          reduce using rule 81 (g_exp -> m_exp n_compareQuad .)
     SEMICOLON       reduce using rule 81 (g_exp -> m_exp n_compareQuad .)
     HASTA           reduce using rule 81 (g_exp -> m_exp n_compareQuad .)
-    RSQUARE         reduce using rule 81 (g_exp -> m_exp n_compareQuad .)
     HACER           reduce using rule 81 (g_exp -> m_exp n_compareQuad .)
+    RSQUARE         reduce using rule 81 (g_exp -> m_exp n_compareQuad .)
     LESSTHAN        shift and go to state 174
     LESSEQUAL       shift and go to state 175
     GREATERTHAN     shift and go to state 176
@@ -2468,8 +2421,8 @@ state 143
     RPAREN          reduce using rule 89 (m_exp -> t n_sumQuad .)
     SEMICOLON       reduce using rule 89 (m_exp -> t n_sumQuad .)
     HASTA           reduce using rule 89 (m_exp -> t n_sumQuad .)
-    RSQUARE         reduce using rule 89 (m_exp -> t n_sumQuad .)
     HACER           reduce using rule 89 (m_exp -> t n_sumQuad .)
+    RSQUARE         reduce using rule 89 (m_exp -> t n_sumQuad .)
     PLUS            shift and go to state 180
     MINUS           shift and go to state 181
 
@@ -2494,8 +2447,8 @@ state 144
     RPAREN          reduce using rule 93 (t -> f n_multQuad .)
     SEMICOLON       reduce using rule 93 (t -> f n_multQuad .)
     HASTA           reduce using rule 93 (t -> f n_multQuad .)
-    RSQUARE         reduce using rule 93 (t -> f n_multQuad .)
     HACER           reduce using rule 93 (t -> f n_multQuad .)
+    RSQUARE         reduce using rule 93 (t -> f n_multQuad .)
     MULT            shift and go to state 182
     DIV             shift and go to state 183
 
@@ -2528,8 +2481,8 @@ state 146
     RPAREN          reduce using rule 110 (n_directPrint -> .)
     SEMICOLON       reduce using rule 110 (n_directPrint -> .)
     HASTA           reduce using rule 110 (n_directPrint -> .)
-    RSQUARE         reduce using rule 110 (n_directPrint -> .)
     HACER           reduce using rule 110 (n_directPrint -> .)
+    RSQUARE         reduce using rule 110 (n_directPrint -> .)
 
     n_directPrint                  shift and go to state 185
 
@@ -2561,8 +2514,8 @@ state 148
     RPAREN          reduce using rule 110 (n_directPrint -> .)
     SEMICOLON       reduce using rule 110 (n_directPrint -> .)
     HASTA           reduce using rule 110 (n_directPrint -> .)
-    RSQUARE         reduce using rule 110 (n_directPrint -> .)
     HACER           reduce using rule 110 (n_directPrint -> .)
+    RSQUARE         reduce using rule 110 (n_directPrint -> .)
 
     n_directPrint                  shift and go to state 187
 
@@ -2587,8 +2540,8 @@ state 149
     RPAREN          reduce using rule 110 (n_directPrint -> .)
     SEMICOLON       reduce using rule 110 (n_directPrint -> .)
     HASTA           reduce using rule 110 (n_directPrint -> .)
-    RSQUARE         reduce using rule 110 (n_directPrint -> .)
     HACER           reduce using rule 110 (n_directPrint -> .)
+    RSQUARE         reduce using rule 110 (n_directPrint -> .)
 
     n_directPrint                  shift and go to state 188
 
@@ -2649,7 +2602,7 @@ state 153
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -2792,7 +2745,7 @@ state 162
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -2824,10 +2777,64 @@ state 162
 
 state 163
 
-    (22) variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp . RSQUARE n_arr_quad
+    (22) variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim . mult_exp RSQUARE n_end_FF n_arr_quad
+    (73) mult_exp -> . exp
+    (74) mult_exp -> . exp COMMA mult_exp
+    (75) exp -> . t_exp n_orQuad
+    (76) exp -> . t_exp n_orQuad OR n_Operador exp
+    (78) t_exp -> . g_exp n_andQuad
+    (79) t_exp -> . g_exp n_andQuad AND n_Operador t_exp
+    (81) g_exp -> . m_exp n_compareQuad
+    (82) g_exp -> . m_exp n_compareQuad LESSTHAN n_Operador g_exp
+    (83) g_exp -> . m_exp n_compareQuad LESSEQUAL n_Operador g_exp
+    (84) g_exp -> . m_exp n_compareQuad GREATERTHAN n_Operador g_exp
+    (85) g_exp -> . m_exp n_compareQuad GREATEREQUAL n_Operador g_exp
+    (86) g_exp -> . m_exp n_compareQuad SAME n_Operador g_exp
+    (87) g_exp -> . m_exp n_compareQuad NOEQUAL n_Operador g_exp
+    (89) m_exp -> . t n_sumQuad
+    (90) m_exp -> . t n_sumQuad PLUS n_Operador m_exp
+    (91) m_exp -> . t n_sumQuad MINUS n_Operador m_exp
+    (93) t -> . f n_multQuad
+    (94) t -> . f n_multQuad MULT n_Operador t
+    (95) t -> . f n_multQuad DIV n_Operador t
+    (98) f -> . LPAREN n_start_FF mult_exp RPAREN n_end_FF
+    (99) f -> . n_tempTypeI MINUS CTE_I n_directPrint_neg
+    (100) f -> . n_tempTypeF MINUS CTE_F n_directPrint_neg
+    (101) f -> . n_tempTypeI CTE_I n_directPrint
+    (102) f -> . n_tempTypeF CTE_F n_directPrint
+    (103) f -> . n_tempTypeC CTE_C n_directPrint
+    (104) f -> . variable
+    (105) f -> . llamada
+    (106) n_tempTypeI -> .
+    (107) n_tempTypeF -> .
+    (108) n_tempTypeC -> .
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
+    (23) variable -> . ID n_getVarVal
+    (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
+    (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
 
-    RSQUARE         shift and go to state 201
+  ! reduce/reduce conflict for MINUS resolved using rule 106 (n_tempTypeI -> .)
+    LPAREN          shift and go to state 101
+    MINUS           reduce using rule 106 (n_tempTypeI -> .)
+    CTE_I           reduce using rule 106 (n_tempTypeI -> .)
+    CTE_F           reduce using rule 107 (n_tempTypeF -> .)
+    CTE_C           reduce using rule 108 (n_tempTypeC -> .)
+    ID              shift and go to state 116
 
+  ! MINUS           [ reduce using rule 107 (n_tempTypeF -> .) ]
+
+    mult_exp                       shift and go to state 201
+    exp                            shift and go to state 104
+    t_exp                          shift and go to state 106
+    g_exp                          shift and go to state 107
+    m_exp                          shift and go to state 108
+    t                              shift and go to state 109
+    f                              shift and go to state 110
+    n_tempTypeI                    shift and go to state 111
+    n_tempTypeF                    shift and go to state 112
+    n_tempTypeC                    shift and go to state 113
+    variable                       shift and go to state 114
+    llamada                        shift and go to state 115
 
 state 164
 
@@ -2887,9 +2894,9 @@ state 170
     RPAREN          reduce using rule 74 (mult_exp -> exp COMMA mult_exp .)
     SEMICOLON       reduce using rule 74 (mult_exp -> exp COMMA mult_exp .)
     HASTA           reduce using rule 74 (mult_exp -> exp COMMA mult_exp .)
-    RSQUARE         reduce using rule 74 (mult_exp -> exp COMMA mult_exp .)
     HACER           reduce using rule 74 (mult_exp -> exp COMMA mult_exp .)
     COMMA           reduce using rule 74 (mult_exp -> exp COMMA mult_exp .)
+    RSQUARE         reduce using rule 74 (mult_exp -> exp COMMA mult_exp .)
 
 
 state 171
@@ -3088,8 +3095,8 @@ state 184
     RPAREN          reduce using rule 109 (n_directPrint_neg -> .)
     SEMICOLON       reduce using rule 109 (n_directPrint_neg -> .)
     HASTA           reduce using rule 109 (n_directPrint_neg -> .)
-    RSQUARE         reduce using rule 109 (n_directPrint_neg -> .)
     HACER           reduce using rule 109 (n_directPrint_neg -> .)
+    RSQUARE         reduce using rule 109 (n_directPrint_neg -> .)
 
     n_directPrint_neg              shift and go to state 217
 
@@ -3113,8 +3120,8 @@ state 185
     RPAREN          reduce using rule 101 (f -> n_tempTypeI CTE_I n_directPrint .)
     SEMICOLON       reduce using rule 101 (f -> n_tempTypeI CTE_I n_directPrint .)
     HASTA           reduce using rule 101 (f -> n_tempTypeI CTE_I n_directPrint .)
-    RSQUARE         reduce using rule 101 (f -> n_tempTypeI CTE_I n_directPrint .)
     HACER           reduce using rule 101 (f -> n_tempTypeI CTE_I n_directPrint .)
+    RSQUARE         reduce using rule 101 (f -> n_tempTypeI CTE_I n_directPrint .)
 
 
 state 186
@@ -3138,8 +3145,8 @@ state 186
     RPAREN          reduce using rule 109 (n_directPrint_neg -> .)
     SEMICOLON       reduce using rule 109 (n_directPrint_neg -> .)
     HASTA           reduce using rule 109 (n_directPrint_neg -> .)
-    RSQUARE         reduce using rule 109 (n_directPrint_neg -> .)
     HACER           reduce using rule 109 (n_directPrint_neg -> .)
+    RSQUARE         reduce using rule 109 (n_directPrint_neg -> .)
 
     n_directPrint_neg              shift and go to state 218
 
@@ -3163,8 +3170,8 @@ state 187
     RPAREN          reduce using rule 102 (f -> n_tempTypeF CTE_F n_directPrint .)
     SEMICOLON       reduce using rule 102 (f -> n_tempTypeF CTE_F n_directPrint .)
     HASTA           reduce using rule 102 (f -> n_tempTypeF CTE_F n_directPrint .)
-    RSQUARE         reduce using rule 102 (f -> n_tempTypeF CTE_F n_directPrint .)
     HACER           reduce using rule 102 (f -> n_tempTypeF CTE_F n_directPrint .)
+    RSQUARE         reduce using rule 102 (f -> n_tempTypeF CTE_F n_directPrint .)
 
 
 state 188
@@ -3187,8 +3194,8 @@ state 188
     RPAREN          reduce using rule 103 (f -> n_tempTypeC CTE_C n_directPrint .)
     SEMICOLON       reduce using rule 103 (f -> n_tempTypeC CTE_C n_directPrint .)
     HASTA           reduce using rule 103 (f -> n_tempTypeC CTE_C n_directPrint .)
-    RSQUARE         reduce using rule 103 (f -> n_tempTypeC CTE_C n_directPrint .)
     HACER           reduce using rule 103 (f -> n_tempTypeC CTE_C n_directPrint .)
+    RSQUARE         reduce using rule 103 (f -> n_tempTypeC CTE_C n_directPrint .)
 
 
 state 189
@@ -3293,8 +3300,8 @@ state 199
     COMMA           reduce using rule 112 (n_end_FF -> .)
     RPAREN          reduce using rule 112 (n_end_FF -> .)
     HASTA           reduce using rule 112 (n_end_FF -> .)
-    RSQUARE         reduce using rule 112 (n_end_FF -> .)
     HACER           reduce using rule 112 (n_end_FF -> .)
+    RSQUARE         reduce using rule 112 (n_end_FF -> .)
 
     n_end_FF                       shift and go to state 225
 
@@ -3311,30 +3318,10 @@ state 200
 
 state 201
 
-    (22) variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE . n_arr_quad
-    (24) n_arr_quad -> .
+    (22) variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp . RSQUARE n_end_FF n_arr_quad
 
-    EQUAL           reduce using rule 24 (n_arr_quad -> .)
-    RPAREN          reduce using rule 24 (n_arr_quad -> .)
-    MULT            reduce using rule 24 (n_arr_quad -> .)
-    DIV             reduce using rule 24 (n_arr_quad -> .)
-    PLUS            reduce using rule 24 (n_arr_quad -> .)
-    MINUS           reduce using rule 24 (n_arr_quad -> .)
-    LESSTHAN        reduce using rule 24 (n_arr_quad -> .)
-    LESSEQUAL       reduce using rule 24 (n_arr_quad -> .)
-    GREATERTHAN     reduce using rule 24 (n_arr_quad -> .)
-    GREATEREQUAL    reduce using rule 24 (n_arr_quad -> .)
-    SAME            reduce using rule 24 (n_arr_quad -> .)
-    NOEQUAL         reduce using rule 24 (n_arr_quad -> .)
-    AND             reduce using rule 24 (n_arr_quad -> .)
-    OR              reduce using rule 24 (n_arr_quad -> .)
-    COMMA           reduce using rule 24 (n_arr_quad -> .)
-    SEMICOLON       reduce using rule 24 (n_arr_quad -> .)
-    HASTA           reduce using rule 24 (n_arr_quad -> .)
-    RSQUARE         reduce using rule 24 (n_arr_quad -> .)
-    HACER           reduce using rule 24 (n_arr_quad -> .)
+    RSQUARE         shift and go to state 227
 
-    n_arr_quad                     shift and go to state 227
 
 state 202
 
@@ -3357,8 +3344,8 @@ state 202
     RPAREN          reduce using rule 112 (n_end_FF -> .)
     SEMICOLON       reduce using rule 112 (n_end_FF -> .)
     HASTA           reduce using rule 112 (n_end_FF -> .)
-    RSQUARE         reduce using rule 112 (n_end_FF -> .)
     HACER           reduce using rule 112 (n_end_FF -> .)
+    RSQUARE         reduce using rule 112 (n_end_FF -> .)
 
     n_end_FF                       shift and go to state 228
 
@@ -3421,7 +3408,7 @@ state 205
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -3477,7 +3464,7 @@ state 206
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -3530,7 +3517,7 @@ state 207
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -3582,7 +3569,7 @@ state 208
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -3634,7 +3621,7 @@ state 209
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -3686,7 +3673,7 @@ state 210
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -3738,7 +3725,7 @@ state 211
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -3790,7 +3777,7 @@ state 212
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -3835,7 +3822,7 @@ state 213
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -3879,7 +3866,7 @@ state 214
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -3920,7 +3907,7 @@ state 215
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -3960,7 +3947,7 @@ state 216
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -4003,8 +3990,8 @@ state 217
     RPAREN          reduce using rule 99 (f -> n_tempTypeI MINUS CTE_I n_directPrint_neg .)
     SEMICOLON       reduce using rule 99 (f -> n_tempTypeI MINUS CTE_I n_directPrint_neg .)
     HASTA           reduce using rule 99 (f -> n_tempTypeI MINUS CTE_I n_directPrint_neg .)
-    RSQUARE         reduce using rule 99 (f -> n_tempTypeI MINUS CTE_I n_directPrint_neg .)
     HACER           reduce using rule 99 (f -> n_tempTypeI MINUS CTE_I n_directPrint_neg .)
+    RSQUARE         reduce using rule 99 (f -> n_tempTypeI MINUS CTE_I n_directPrint_neg .)
 
 
 state 218
@@ -4027,8 +4014,8 @@ state 218
     RPAREN          reduce using rule 100 (f -> n_tempTypeF MINUS CTE_F n_directPrint_neg .)
     SEMICOLON       reduce using rule 100 (f -> n_tempTypeF MINUS CTE_F n_directPrint_neg .)
     HASTA           reduce using rule 100 (f -> n_tempTypeF MINUS CTE_F n_directPrint_neg .)
-    RSQUARE         reduce using rule 100 (f -> n_tempTypeF MINUS CTE_F n_directPrint_neg .)
     HACER           reduce using rule 100 (f -> n_tempTypeF MINUS CTE_F n_directPrint_neg .)
+    RSQUARE         reduce using rule 100 (f -> n_tempTypeF MINUS CTE_F n_directPrint_neg .)
 
 
 state 219
@@ -4099,8 +4086,8 @@ state 224
     COMMA           reduce using rule 112 (n_end_FF -> .)
     RPAREN          reduce using rule 112 (n_end_FF -> .)
     HASTA           reduce using rule 112 (n_end_FF -> .)
-    RSQUARE         reduce using rule 112 (n_end_FF -> .)
     HACER           reduce using rule 112 (n_end_FF -> .)
+    RSQUARE         reduce using rule 112 (n_end_FF -> .)
 
     n_end_FF                       shift and go to state 244
 
@@ -4125,8 +4112,8 @@ state 225
     COMMA           reduce using rule 64 (n_last_param_action -> .)
     RPAREN          reduce using rule 64 (n_last_param_action -> .)
     HASTA           reduce using rule 64 (n_last_param_action -> .)
-    RSQUARE         reduce using rule 64 (n_last_param_action -> .)
     HACER           reduce using rule 64 (n_last_param_action -> .)
+    RSQUARE         reduce using rule 64 (n_last_param_action -> .)
 
     n_last_param_action            shift and go to state 245
 
@@ -4141,28 +4128,30 @@ state 226
 
 state 227
 
-    (22) variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .
+    (22) variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE . n_end_FF n_arr_quad
+    (112) n_end_FF -> .
 
-    EQUAL           reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .)
-    RPAREN          reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .)
-    MULT            reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .)
-    DIV             reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .)
-    PLUS            reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .)
-    MINUS           reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .)
-    LESSTHAN        reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .)
-    LESSEQUAL       reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .)
-    GREATERTHAN     reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .)
-    GREATEREQUAL    reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .)
-    SAME            reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .)
-    NOEQUAL         reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .)
-    AND             reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .)
-    OR              reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .)
-    COMMA           reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .)
-    SEMICOLON       reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .)
-    HASTA           reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .)
-    RSQUARE         reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .)
-    HACER           reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad .)
+    EQUAL           reduce using rule 112 (n_end_FF -> .)
+    RPAREN          reduce using rule 112 (n_end_FF -> .)
+    MULT            reduce using rule 112 (n_end_FF -> .)
+    DIV             reduce using rule 112 (n_end_FF -> .)
+    PLUS            reduce using rule 112 (n_end_FF -> .)
+    MINUS           reduce using rule 112 (n_end_FF -> .)
+    LESSTHAN        reduce using rule 112 (n_end_FF -> .)
+    LESSEQUAL       reduce using rule 112 (n_end_FF -> .)
+    GREATERTHAN     reduce using rule 112 (n_end_FF -> .)
+    GREATEREQUAL    reduce using rule 112 (n_end_FF -> .)
+    SAME            reduce using rule 112 (n_end_FF -> .)
+    NOEQUAL         reduce using rule 112 (n_end_FF -> .)
+    AND             reduce using rule 112 (n_end_FF -> .)
+    OR              reduce using rule 112 (n_end_FF -> .)
+    COMMA           reduce using rule 112 (n_end_FF -> .)
+    SEMICOLON       reduce using rule 112 (n_end_FF -> .)
+    HASTA           reduce using rule 112 (n_end_FF -> .)
+    HACER           reduce using rule 112 (n_end_FF -> .)
+    RSQUARE         reduce using rule 112 (n_end_FF -> .)
 
+    n_end_FF                       shift and go to state 247
 
 state 228
 
@@ -4184,8 +4173,8 @@ state 228
     RPAREN          reduce using rule 98 (f -> LPAREN n_start_FF mult_exp RPAREN n_end_FF .)
     SEMICOLON       reduce using rule 98 (f -> LPAREN n_start_FF mult_exp RPAREN n_end_FF .)
     HASTA           reduce using rule 98 (f -> LPAREN n_start_FF mult_exp RPAREN n_end_FF .)
-    RSQUARE         reduce using rule 98 (f -> LPAREN n_start_FF mult_exp RPAREN n_end_FF .)
     HACER           reduce using rule 98 (f -> LPAREN n_start_FF mult_exp RPAREN n_end_FF .)
+    RSQUARE         reduce using rule 98 (f -> LPAREN n_start_FF mult_exp RPAREN n_end_FF .)
 
 
 state 229
@@ -4196,8 +4185,8 @@ state 229
     RPAREN          reduce using rule 76 (exp -> t_exp n_orQuad OR n_Operador exp .)
     SEMICOLON       reduce using rule 76 (exp -> t_exp n_orQuad OR n_Operador exp .)
     HASTA           reduce using rule 76 (exp -> t_exp n_orQuad OR n_Operador exp .)
-    RSQUARE         reduce using rule 76 (exp -> t_exp n_orQuad OR n_Operador exp .)
     HACER           reduce using rule 76 (exp -> t_exp n_orQuad OR n_Operador exp .)
+    RSQUARE         reduce using rule 76 (exp -> t_exp n_orQuad OR n_Operador exp .)
 
 
 state 230
@@ -4209,8 +4198,8 @@ state 230
     RPAREN          reduce using rule 79 (t_exp -> g_exp n_andQuad AND n_Operador t_exp .)
     SEMICOLON       reduce using rule 79 (t_exp -> g_exp n_andQuad AND n_Operador t_exp .)
     HASTA           reduce using rule 79 (t_exp -> g_exp n_andQuad AND n_Operador t_exp .)
-    RSQUARE         reduce using rule 79 (t_exp -> g_exp n_andQuad AND n_Operador t_exp .)
     HACER           reduce using rule 79 (t_exp -> g_exp n_andQuad AND n_Operador t_exp .)
+    RSQUARE         reduce using rule 79 (t_exp -> g_exp n_andQuad AND n_Operador t_exp .)
 
 
 state 231
@@ -4223,8 +4212,8 @@ state 231
     RPAREN          reduce using rule 82 (g_exp -> m_exp n_compareQuad LESSTHAN n_Operador g_exp .)
     SEMICOLON       reduce using rule 82 (g_exp -> m_exp n_compareQuad LESSTHAN n_Operador g_exp .)
     HASTA           reduce using rule 82 (g_exp -> m_exp n_compareQuad LESSTHAN n_Operador g_exp .)
-    RSQUARE         reduce using rule 82 (g_exp -> m_exp n_compareQuad LESSTHAN n_Operador g_exp .)
     HACER           reduce using rule 82 (g_exp -> m_exp n_compareQuad LESSTHAN n_Operador g_exp .)
+    RSQUARE         reduce using rule 82 (g_exp -> m_exp n_compareQuad LESSTHAN n_Operador g_exp .)
 
 
 state 232
@@ -4237,8 +4226,8 @@ state 232
     RPAREN          reduce using rule 83 (g_exp -> m_exp n_compareQuad LESSEQUAL n_Operador g_exp .)
     SEMICOLON       reduce using rule 83 (g_exp -> m_exp n_compareQuad LESSEQUAL n_Operador g_exp .)
     HASTA           reduce using rule 83 (g_exp -> m_exp n_compareQuad LESSEQUAL n_Operador g_exp .)
-    RSQUARE         reduce using rule 83 (g_exp -> m_exp n_compareQuad LESSEQUAL n_Operador g_exp .)
     HACER           reduce using rule 83 (g_exp -> m_exp n_compareQuad LESSEQUAL n_Operador g_exp .)
+    RSQUARE         reduce using rule 83 (g_exp -> m_exp n_compareQuad LESSEQUAL n_Operador g_exp .)
 
 
 state 233
@@ -4251,8 +4240,8 @@ state 233
     RPAREN          reduce using rule 84 (g_exp -> m_exp n_compareQuad GREATERTHAN n_Operador g_exp .)
     SEMICOLON       reduce using rule 84 (g_exp -> m_exp n_compareQuad GREATERTHAN n_Operador g_exp .)
     HASTA           reduce using rule 84 (g_exp -> m_exp n_compareQuad GREATERTHAN n_Operador g_exp .)
-    RSQUARE         reduce using rule 84 (g_exp -> m_exp n_compareQuad GREATERTHAN n_Operador g_exp .)
     HACER           reduce using rule 84 (g_exp -> m_exp n_compareQuad GREATERTHAN n_Operador g_exp .)
+    RSQUARE         reduce using rule 84 (g_exp -> m_exp n_compareQuad GREATERTHAN n_Operador g_exp .)
 
 
 state 234
@@ -4265,8 +4254,8 @@ state 234
     RPAREN          reduce using rule 85 (g_exp -> m_exp n_compareQuad GREATEREQUAL n_Operador g_exp .)
     SEMICOLON       reduce using rule 85 (g_exp -> m_exp n_compareQuad GREATEREQUAL n_Operador g_exp .)
     HASTA           reduce using rule 85 (g_exp -> m_exp n_compareQuad GREATEREQUAL n_Operador g_exp .)
-    RSQUARE         reduce using rule 85 (g_exp -> m_exp n_compareQuad GREATEREQUAL n_Operador g_exp .)
     HACER           reduce using rule 85 (g_exp -> m_exp n_compareQuad GREATEREQUAL n_Operador g_exp .)
+    RSQUARE         reduce using rule 85 (g_exp -> m_exp n_compareQuad GREATEREQUAL n_Operador g_exp .)
 
 
 state 235
@@ -4279,8 +4268,8 @@ state 235
     RPAREN          reduce using rule 86 (g_exp -> m_exp n_compareQuad SAME n_Operador g_exp .)
     SEMICOLON       reduce using rule 86 (g_exp -> m_exp n_compareQuad SAME n_Operador g_exp .)
     HASTA           reduce using rule 86 (g_exp -> m_exp n_compareQuad SAME n_Operador g_exp .)
-    RSQUARE         reduce using rule 86 (g_exp -> m_exp n_compareQuad SAME n_Operador g_exp .)
     HACER           reduce using rule 86 (g_exp -> m_exp n_compareQuad SAME n_Operador g_exp .)
+    RSQUARE         reduce using rule 86 (g_exp -> m_exp n_compareQuad SAME n_Operador g_exp .)
 
 
 state 236
@@ -4293,8 +4282,8 @@ state 236
     RPAREN          reduce using rule 87 (g_exp -> m_exp n_compareQuad NOEQUAL n_Operador g_exp .)
     SEMICOLON       reduce using rule 87 (g_exp -> m_exp n_compareQuad NOEQUAL n_Operador g_exp .)
     HASTA           reduce using rule 87 (g_exp -> m_exp n_compareQuad NOEQUAL n_Operador g_exp .)
-    RSQUARE         reduce using rule 87 (g_exp -> m_exp n_compareQuad NOEQUAL n_Operador g_exp .)
     HACER           reduce using rule 87 (g_exp -> m_exp n_compareQuad NOEQUAL n_Operador g_exp .)
+    RSQUARE         reduce using rule 87 (g_exp -> m_exp n_compareQuad NOEQUAL n_Operador g_exp .)
 
 
 state 237
@@ -4313,8 +4302,8 @@ state 237
     RPAREN          reduce using rule 90 (m_exp -> t n_sumQuad PLUS n_Operador m_exp .)
     SEMICOLON       reduce using rule 90 (m_exp -> t n_sumQuad PLUS n_Operador m_exp .)
     HASTA           reduce using rule 90 (m_exp -> t n_sumQuad PLUS n_Operador m_exp .)
-    RSQUARE         reduce using rule 90 (m_exp -> t n_sumQuad PLUS n_Operador m_exp .)
     HACER           reduce using rule 90 (m_exp -> t n_sumQuad PLUS n_Operador m_exp .)
+    RSQUARE         reduce using rule 90 (m_exp -> t n_sumQuad PLUS n_Operador m_exp .)
 
 
 state 238
@@ -4333,8 +4322,8 @@ state 238
     RPAREN          reduce using rule 91 (m_exp -> t n_sumQuad MINUS n_Operador m_exp .)
     SEMICOLON       reduce using rule 91 (m_exp -> t n_sumQuad MINUS n_Operador m_exp .)
     HASTA           reduce using rule 91 (m_exp -> t n_sumQuad MINUS n_Operador m_exp .)
-    RSQUARE         reduce using rule 91 (m_exp -> t n_sumQuad MINUS n_Operador m_exp .)
     HACER           reduce using rule 91 (m_exp -> t n_sumQuad MINUS n_Operador m_exp .)
+    RSQUARE         reduce using rule 91 (m_exp -> t n_sumQuad MINUS n_Operador m_exp .)
 
 
 state 239
@@ -4355,8 +4344,8 @@ state 239
     RPAREN          reduce using rule 94 (t -> f n_multQuad MULT n_Operador t .)
     SEMICOLON       reduce using rule 94 (t -> f n_multQuad MULT n_Operador t .)
     HASTA           reduce using rule 94 (t -> f n_multQuad MULT n_Operador t .)
-    RSQUARE         reduce using rule 94 (t -> f n_multQuad MULT n_Operador t .)
     HACER           reduce using rule 94 (t -> f n_multQuad MULT n_Operador t .)
+    RSQUARE         reduce using rule 94 (t -> f n_multQuad MULT n_Operador t .)
 
 
 state 240
@@ -4377,8 +4366,8 @@ state 240
     RPAREN          reduce using rule 95 (t -> f n_multQuad DIV n_Operador t .)
     SEMICOLON       reduce using rule 95 (t -> f n_multQuad DIV n_Operador t .)
     HASTA           reduce using rule 95 (t -> f n_multQuad DIV n_Operador t .)
-    RSQUARE         reduce using rule 95 (t -> f n_multQuad DIV n_Operador t .)
     HACER           reduce using rule 95 (t -> f n_multQuad DIV n_Operador t .)
+    RSQUARE         reduce using rule 95 (t -> f n_multQuad DIV n_Operador t .)
 
 
 state 241
@@ -4387,7 +4376,7 @@ state 241
     (114) condicion -> SI LPAREN mult_exp RPAREN n_ifQuad ENTONCES bloque . SINO p_n_sinoQuad bloque n_endIfQuad
     (116) n_endIfQuad -> .
 
-    SINO            shift and go to state 248
+    SINO            shift and go to state 249
     ID              reduce using rule 116 (n_endIfQuad -> .)
     LEE             reduce using rule 116 (n_endIfQuad -> .)
     ESCRIBE         reduce using rule 116 (n_endIfQuad -> .)
@@ -4397,7 +4386,7 @@ state 241
     DESDE           reduce using rule 116 (n_endIfQuad -> .)
     RBRACKET        reduce using rule 116 (n_endIfQuad -> .)
 
-    n_endIfQuad                    shift and go to state 247
+    n_endIfQuad                    shift and go to state 248
 
 state 242
 
@@ -4407,7 +4396,7 @@ state 242
 
     LBRACKET        shift and go to state 46
 
-    bloque                         shift and go to state 249
+    bloque                         shift and go to state 250
 
 state 243
 
@@ -4417,7 +4406,7 @@ state 243
 
     LBRACKET        shift and go to state 46
 
-    bloque                         shift and go to state 250
+    bloque                         shift and go to state 251
 
 state 244
 
@@ -4440,10 +4429,10 @@ state 244
     COMMA           reduce using rule 64 (n_last_param_action -> .)
     RPAREN          reduce using rule 64 (n_last_param_action -> .)
     HASTA           reduce using rule 64 (n_last_param_action -> .)
-    RSQUARE         reduce using rule 64 (n_last_param_action -> .)
     HACER           reduce using rule 64 (n_last_param_action -> .)
+    RSQUARE         reduce using rule 64 (n_last_param_action -> .)
 
-    n_last_param_action            shift and go to state 251
+    n_last_param_action            shift and go to state 252
 
 state 245
 
@@ -4465,8 +4454,8 @@ state 245
     COMMA           reduce using rule 63 (llamada -> ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action .)
     RPAREN          reduce using rule 63 (llamada -> ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action .)
     HASTA           reduce using rule 63 (llamada -> ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action .)
-    RSQUARE         reduce using rule 63 (llamada -> ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action .)
     HACER           reduce using rule 63 (llamada -> ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action .)
+    RSQUARE         reduce using rule 63 (llamada -> ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action .)
 
 
 state 246
@@ -4504,7 +4493,7 @@ state 246
     (106) n_tempTypeI -> .
     (107) n_tempTypeF -> .
     (108) n_tempTypeC -> .
-    (22) variable -> . ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    (22) variable -> . ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
     (23) variable -> . ID n_getVarVal
     (62) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
     (63) llamada -> . ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
@@ -4520,7 +4509,7 @@ state 246
   ! MINUS           [ reduce using rule 107 (n_tempTypeF -> .) ]
 
     mult_exp                       shift and go to state 200
-    param_exp                      shift and go to state 252
+    param_exp                      shift and go to state 253
     exp                            shift and go to state 104
     t_exp                          shift and go to state 106
     g_exp                          shift and go to state 107
@@ -4535,6 +4524,33 @@ state 246
 
 state 247
 
+    (22) variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF . n_arr_quad
+    (24) n_arr_quad -> .
+
+    EQUAL           reduce using rule 24 (n_arr_quad -> .)
+    RPAREN          reduce using rule 24 (n_arr_quad -> .)
+    MULT            reduce using rule 24 (n_arr_quad -> .)
+    DIV             reduce using rule 24 (n_arr_quad -> .)
+    PLUS            reduce using rule 24 (n_arr_quad -> .)
+    MINUS           reduce using rule 24 (n_arr_quad -> .)
+    LESSTHAN        reduce using rule 24 (n_arr_quad -> .)
+    LESSEQUAL       reduce using rule 24 (n_arr_quad -> .)
+    GREATERTHAN     reduce using rule 24 (n_arr_quad -> .)
+    GREATEREQUAL    reduce using rule 24 (n_arr_quad -> .)
+    SAME            reduce using rule 24 (n_arr_quad -> .)
+    NOEQUAL         reduce using rule 24 (n_arr_quad -> .)
+    AND             reduce using rule 24 (n_arr_quad -> .)
+    OR              reduce using rule 24 (n_arr_quad -> .)
+    COMMA           reduce using rule 24 (n_arr_quad -> .)
+    SEMICOLON       reduce using rule 24 (n_arr_quad -> .)
+    HASTA           reduce using rule 24 (n_arr_quad -> .)
+    HACER           reduce using rule 24 (n_arr_quad -> .)
+    RSQUARE         reduce using rule 24 (n_arr_quad -> .)
+
+    n_arr_quad                     shift and go to state 254
+
+state 248
+
     (113) condicion -> SI LPAREN mult_exp RPAREN n_ifQuad ENTONCES bloque n_endIfQuad .
 
     ID              reduce using rule 113 (condicion -> SI LPAREN mult_exp RPAREN n_ifQuad ENTONCES bloque n_endIfQuad .)
@@ -4547,16 +4563,16 @@ state 247
     RBRACKET        reduce using rule 113 (condicion -> SI LPAREN mult_exp RPAREN n_ifQuad ENTONCES bloque n_endIfQuad .)
 
 
-state 248
+state 249
 
     (114) condicion -> SI LPAREN mult_exp RPAREN n_ifQuad ENTONCES bloque SINO . p_n_sinoQuad bloque n_endIfQuad
     (117) p_n_sinoQuad -> .
 
     LBRACKET        reduce using rule 117 (p_n_sinoQuad -> .)
 
-    p_n_sinoQuad                   shift and go to state 253
+    p_n_sinoQuad                   shift and go to state 255
 
-state 249
+state 250
 
     (118) ciclo_w -> MIENTRAS n_startCicle LPAREN mult_exp RPAREN n_evalExp HAZ bloque . n_endWhile
     (121) n_endWhile -> .
@@ -4570,9 +4586,9 @@ state 249
     DESDE           reduce using rule 121 (n_endWhile -> .)
     RBRACKET        reduce using rule 121 (n_endWhile -> .)
 
-    n_endWhile                     shift and go to state 254
+    n_endWhile                     shift and go to state 256
 
-state 250
+state 251
 
     (122) ciclo_f -> DESDE asigna n_startCicle HASTA mult_exp n_evalExp_for HACER bloque . n_endFor
     (124) n_endFor -> .
@@ -4586,9 +4602,9 @@ state 250
     DESDE           reduce using rule 124 (n_endFor -> .)
     RBRACKET        reduce using rule 124 (n_endFor -> .)
 
-    n_endFor                       shift and go to state 255
+    n_endFor                       shift and go to state 257
 
-state 251
+state 252
 
     (62) llamada -> ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action .
 
@@ -4608,18 +4624,43 @@ state 251
     COMMA           reduce using rule 62 (llamada -> ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action .)
     RPAREN          reduce using rule 62 (llamada -> ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action .)
     HASTA           reduce using rule 62 (llamada -> ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action .)
-    RSQUARE         reduce using rule 62 (llamada -> ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action .)
     HACER           reduce using rule 62 (llamada -> ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action .)
+    RSQUARE         reduce using rule 62 (llamada -> ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action .)
 
 
-state 252
+state 253
 
     (60) param_exp -> mult_exp n_parameter_action COMMA param_exp .
 
     RPAREN          reduce using rule 60 (param_exp -> mult_exp n_parameter_action COMMA param_exp .)
 
 
-state 253
+state 254
+
+    (22) variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .
+
+    EQUAL           reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .)
+    RPAREN          reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .)
+    MULT            reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .)
+    DIV             reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .)
+    PLUS            reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .)
+    MINUS           reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .)
+    LESSTHAN        reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .)
+    LESSEQUAL       reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .)
+    GREATERTHAN     reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .)
+    GREATEREQUAL    reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .)
+    SAME            reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .)
+    NOEQUAL         reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .)
+    AND             reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .)
+    OR              reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .)
+    COMMA           reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .)
+    SEMICOLON       reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .)
+    HASTA           reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .)
+    HACER           reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .)
+    RSQUARE         reduce using rule 22 (variable -> ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad .)
+
+
+state 255
 
     (114) condicion -> SI LPAREN mult_exp RPAREN n_ifQuad ENTONCES bloque SINO p_n_sinoQuad . bloque n_endIfQuad
     (43) bloque -> . LBRACKET mult_estatutos RBRACKET
@@ -4627,9 +4668,9 @@ state 253
 
     LBRACKET        shift and go to state 46
 
-    bloque                         shift and go to state 256
+    bloque                         shift and go to state 258
 
-state 254
+state 256
 
     (118) ciclo_w -> MIENTRAS n_startCicle LPAREN mult_exp RPAREN n_evalExp HAZ bloque n_endWhile .
 
@@ -4643,7 +4684,7 @@ state 254
     RBRACKET        reduce using rule 118 (ciclo_w -> MIENTRAS n_startCicle LPAREN mult_exp RPAREN n_evalExp HAZ bloque n_endWhile .)
 
 
-state 255
+state 257
 
     (122) ciclo_f -> DESDE asigna n_startCicle HASTA mult_exp n_evalExp_for HACER bloque n_endFor .
 
@@ -4657,7 +4698,7 @@ state 255
     RBRACKET        reduce using rule 122 (ciclo_f -> DESDE asigna n_startCicle HASTA mult_exp n_evalExp_for HACER bloque n_endFor .)
 
 
-state 256
+state 258
 
     (114) condicion -> SI LPAREN mult_exp RPAREN n_ifQuad ENTONCES bloque SINO p_n_sinoQuad bloque . n_endIfQuad
     (116) n_endIfQuad -> .
@@ -4671,9 +4712,9 @@ state 256
     DESDE           reduce using rule 116 (n_endIfQuad -> .)
     RBRACKET        reduce using rule 116 (n_endIfQuad -> .)
 
-    n_endIfQuad                    shift and go to state 257
+    n_endIfQuad                    shift and go to state 259
 
-state 257
+state 259
 
     (114) condicion -> SI LPAREN mult_exp RPAREN n_ifQuad ENTONCES bloque SINO p_n_sinoQuad bloque n_endIfQuad .
 
@@ -4700,8 +4741,6 @@ WARNING: reduce/reduce conflict in state 100 resolved using rule (n_tempTypeI ->
 WARNING: rejected rule (n_tempTypeF -> <empty>) in state 100
 WARNING: reduce/reduce conflict in state 118 resolved using rule (n_tempTypeI -> <empty>)
 WARNING: rejected rule (n_tempTypeF -> <empty>) in state 118
-WARNING: reduce/reduce conflict in state 130 resolved using rule (n_tempTypeI -> <empty>)
-WARNING: rejected rule (n_tempTypeF -> <empty>) in state 130
 WARNING: reduce/reduce conflict in state 135 resolved using rule (n_tempTypeI -> <empty>)
 WARNING: rejected rule (n_tempTypeF -> <empty>) in state 135
 WARNING: reduce/reduce conflict in state 138 resolved using rule (n_tempTypeI -> <empty>)
@@ -4710,6 +4749,8 @@ WARNING: reduce/reduce conflict in state 153 resolved using rule (n_tempTypeI ->
 WARNING: rejected rule (n_tempTypeF -> <empty>) in state 153
 WARNING: reduce/reduce conflict in state 162 resolved using rule (n_tempTypeI -> <empty>)
 WARNING: rejected rule (n_tempTypeF -> <empty>) in state 162
+WARNING: reduce/reduce conflict in state 163 resolved using rule (n_tempTypeI -> <empty>)
+WARNING: rejected rule (n_tempTypeF -> <empty>) in state 163
 WARNING: reduce/reduce conflict in state 205 resolved using rule (n_tempTypeI -> <empty>)
 WARNING: rejected rule (n_tempTypeF -> <empty>) in state 205
 WARNING: reduce/reduce conflict in state 206 resolved using rule (n_tempTypeI -> <empty>)

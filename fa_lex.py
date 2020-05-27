@@ -70,7 +70,7 @@ t_LSQUARE = r'\['
 t_RSQUARE = r'\]'
 t_COMMA = r'\,'
 t_SEMICOLON = r'\;'
-t_COMMENT = r'\#.*'
+t_ignore_COMMENT = r'\#.*'
 
 # Comparison
 t_EQUAL = r'\='

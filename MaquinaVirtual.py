@@ -18,8 +18,7 @@ top_limit_global = 10000
 top_limit_local = 20000
 #constants 20000- 29999
 top_limit_cte = 30000
-#pointers 30000- 39999.
-top_limit_pointer = 40000
+#pointers 30000-+++
 
 
 
@@ -32,8 +31,10 @@ def set_value(address, value):
         memoria_global.set_value(address, value)
     else:
         #in case of a pointer
-        content_pointer = memoria_global.get_value(address)
-        memoria_global.set_value(content_pointer, value)
+        #if(memoria_global.isDeclared(address)):
+        #    memoria_global.set_value(get_value(address), value)
+        #else:
+        memoria_global.set_value(address, value)
 
 def get_value(address):
     if address < top_limit_global:
@@ -44,9 +45,11 @@ def get_value(address):
         return memoria_global.get_value(address)
     else:
         #in case of a pointer
-        content_pointer = memoria_global.get_value(address)
-        return memoria_global.get_value(content_pointer)
-
+        #content_pointer = memoria_global.get_value(address)
+        #if(memoria_global.isDeclared(get_value(address)) or memorias.peek().isDeclared(get_value(address))):
+        #    return memoria_global.get_value(get_value(address))
+        #else:
+        return memoria_global.get_value(address)
 
 def save_ctes():
     global memoria_global
@@ -54,6 +57,8 @@ def save_ctes():
         memoria_global.set_value(dir_func['constants']['cte'][i]['address'], i)
 
 def getParam(address):
+    if(address >= 30000):
+        return getParam(get_value(address))
     if address%10000 < 2500:
         return int(get_value(address))
     elif address%10000 < 5000:
@@ -96,7 +101,7 @@ def run():
     save_ctes();
     tracker = 0
     while tracker < len(dir_quadruples):
-        #print(tracker)
+        #print("contador " + str(tracker))
         curr_quad = dir_quadruples[tracker]
         instr = curr_quad[0]
         el2 = curr_quad[1]
@@ -107,23 +112,51 @@ def run():
             tracker = el4
 
         elif instr == 'print':
-            print(get_value(el4))
+            if(el4 >= top_limit_cte):
+                aux = get_value(el4)
+            else:
+                aux = el4
+            print(get_value(aux))
             tracker += 1
 
         elif instr == 'read':
             # agregar el leer variable
+            aux = input()
+            if(el4 >= top_limit_cte):
+                aux1 = get_value(el4)
+            else:
+                aux1 = el4
+
+            set_value(aux1, aux)
             tracker+=1
 
         elif instr == '+' or instr == '-' or instr == '*' or instr == '/' or instr == '<' or instr == '<=' or instr == '>' or instr == '>=' or instr == '==' or instr == '<>' or instr == '&' or instr == '|':
-            p1 = getParam(el2)
-            p2 = getParam(el3)
+            if(el2 >= top_limit_cte):
+                aux1 = get_value(el2)
+            else:
+                aux1 = el2
+            if(el3 >= top_limit_cte):
+                aux2 = get_value(el3)
+            else:
+                aux2 = el3
+            p1 = getParam(aux1)
+            p2 = getParam(aux2)
             value = calculate(p1, instr, p2)
             set_value(el4, value)
             tracker += 1
 
         elif instr == '=':
-            toAsign = get_value(el2)
-            set_value(el4, toAsign)
+            if(el2 >= top_limit_cte):
+                aux1 = get_value(el2)
+            else:
+                aux1 = el2
+            aux1 = get_value(aux1)
+
+            if(el4 >= top_limit_cte):
+                aux = get_value(el4)
+            else:
+                aux = el4
+            set_value(aux, aux1)
             tracker += 1
 
         elif instr == 'ENDFUNC':
@@ -175,6 +208,13 @@ def run():
                 this_func.pop()
             set_value(this_func.pop(), aux_val)
 
+        elif instr == 'VERIFY':
+            if getParam(el2) < getParam(el4):
+                tracker += 1
+            else:
+                print('Error en el acceso a un arreglo, fuera de dimension')
+                sys.exit()
+
         else:
             #lets hope this does not get called
             print('error en cuadruplos')
@@ -188,7 +228,7 @@ program_name = sys.argv[1]
 # Compile program.
 with open(program_name, 'r') as file:
     #global dir_func, dir_quadruples
-    input = eval(file.read())
-    dir_func = input['tabla_func']
-    dir_quadruples = input['dir_quadruples']
+    filename = eval(file.read())
+    dir_func = filename['tabla_func']
+    dir_quadruples = filename['dir_quadruples']
     run()

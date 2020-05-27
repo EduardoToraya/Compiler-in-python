@@ -56,10 +56,10 @@ dir_func = {
         }
     },
     'array_pointers' : {
-        'next_pointer' : DIR_BASE_POINTER,
-        'pointer': {
-
-        }
+        'next_pointer' : DIR_BASE_POINTER
+#        'pointer': {
+        #
+        #}
     }
 }
 
@@ -84,11 +84,11 @@ def p_programa(p):
             | PROGRAMA p_n_mainJump ID SEMICOLON vars principal
             | PROGRAMA p_n_mainJump ID SEMICOLON principal
     '''
+    del dir_func['global']['vars']
     pprint(dir_func)
     print("inicio de cuadruplos nombres", '\t\t', 'inicio de cuadruplos de direcciones')
     for i, cuadruplo in enumerate(read_quadruples):
         print(i, cuadruplo, " ",'\t\t', i ,dir_quadruples[i])
-
 
 def p_n_mainJump(p):
     '''
@@ -98,7 +98,6 @@ def p_n_mainJump(p):
     temp_quad = ['Goto', -1, -1, None]
     dir_quadruples.append(temp_quad)
     read_quadruples.append(temp_quad)
-
 
 def p_principal(p):
     '''
@@ -223,9 +222,9 @@ def get_next_pointer_address(p):
     if dir_func['array_pointers']['next_pointer'] - DIR_BASE_POINTER < DIR_LENGTH*4:
         aux = dir_func['array_pointers']['next_pointer']
         dir_func['array_pointers']['next_pointer']  += 1
-        dir_func['array_pointers']['pointer'][aux] = {
-            'points_to' : None
-        }
+        #dir_func['array_pointers']['pointer'][aux] = {
+        #    'points_to' : None
+        #}
         return aux
     else:
         error(p, "Numero de variables de arreglos en su limite")
@@ -275,7 +274,7 @@ def p_empty(p):
 
 def p_variable(p):
     '''
-    variable : ID n_getVarVal LSQUARE n_hasDim mult_exp RSQUARE n_arr_quad
+    variable : ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
              | ID n_getVarVal
     '''
 
@@ -309,7 +308,7 @@ def p_n_arr_quad(p):
 
     temp_quad = ['+', temp_exp.id, temp_array.id, dir_array]
     read_quadruples.append(temp_quad)
-    temp_quad = ['+', temp_array.address, temp_cte, dir_array]
+    temp_quad = ['+', temp_exp.address, temp_cte, dir_array]
     dir_quadruples.append(temp_quad)
 
     temporalArr = 't' + str(currTempArr)
@@ -332,6 +331,7 @@ def p_n_hasDim(p):
     else:
         aux = 'global'
 
+    #print(len(dir_func[aux]['vars'][temp_op.id]))
     if(len(dir_func[aux]['vars'][temp_op.id]) < 3):
         error(p, 'La variable que se está tratando de accesar requiere dimensión')
 
@@ -378,6 +378,8 @@ def p_funcion(p):
           | FUNCION VOID n_save_type ID n_register_func LPAREN RPAREN vars bloque n_endof_func
           | FUNCION VOID n_save_type ID n_register_func LPAREN RPAREN bloque n_endof_func
   '''
+  global dir_func
+  del dir_func[current_func]['vars']
 
 def p_n_register_func(p):
     '''n_register_func : '''
@@ -953,7 +955,7 @@ def p_n_end_FF(p):
     '''
     global popper, pilaOp, pilaTipos
     aux = popper.peek();
-    if aux == '(':
+    if aux == '(' or aux == '[':
         popper.pop();
     else:
         error(p, "Error de paréntesis inconsistentes")

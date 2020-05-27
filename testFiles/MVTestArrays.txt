@@ -1,0 +1,72 @@
+programa patito;
+var
+int i, j, p;
+int arreglo[10];
+
+
+funcion void sort()
+var
+int arreglo[10];
+{
+  arreglo[0] = 33;
+  arreglo[1] = 2;
+  arreglo[2] = 5;
+  arreglo[3] = 9;
+  arreglo[4] = 10;
+  arreglo[5] = 45;
+  arreglo[6] = 1;
+  arreglo[7] = 68;
+  arreglo[8] = 73;
+  arreglo[9] = 70;
+
+  #escribe(arreglo[8]);
+
+  #comienza sort simple
+  i = 0;
+  j = 0;
+  p = 0;
+
+  #imprimiendo arreglo desordenado
+  escribe('comienza la impresion del arreglo desordenado');
+  i = 0;
+  mientras(i < 10) haz{
+    escribe(arreglo[i]);
+    i = i+1;
+  }
+
+  i = 0;
+  mientras (i < 10) haz{
+    j = i;
+    mientras (j < 10) haz{
+        si(arreglo[i] > arreglo[j]) entonces{
+          p = arreglo[j];
+          arreglo[j] = arreglo[i];
+          arreglo[i] = p;
+        }
+        j = j+1;
+    }
+    i = i+1;
+  }
+
+  #imprimiendo arreglo sorteado
+  escribe('comienza la impresion del arreglo ordenado');
+  i = 0;
+  mientras(i < 10) haz{
+    escribe(arreglo[i]);
+    i = i+1;
+  }
+}
+
+
+
+principal(){
+#hola
+escribe('introduce el primer valor del arreglo');
+lee(arreglo[0]);
+escribe('comienza la impresion inicial');
+arreglo[1] = arreglo[0];
+escribe(arreglo[0]);
+i = arreglo[0];
+escribe(i);
+sort();
+}

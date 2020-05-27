@@ -18,7 +18,7 @@ funcion void conParam(char c){
 
 funcion int fibo(int x)
 {
-  sinParam();
+  #sinParam();
   si (x == 1 | x == 0) entonces{
     regresa(x);
   }
