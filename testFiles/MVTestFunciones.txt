@@ -45,7 +45,8 @@ principal()
   escribe('posterior');
   sinParam();
   conParam('asd');
-  x = 10;
+  escribe('introduce el valor para fibonacci y factorial');
+  lee(x);
   escribe('fibbonacci');
   desde i=0 hasta x hacer{
     escribe(fibo(i));
@@ -57,4 +58,5 @@ principal()
     escribe(fact(i));
     i = i+1;
   }
+
 }
