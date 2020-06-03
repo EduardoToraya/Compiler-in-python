@@ -3,11 +3,18 @@ from memoria import Memoria
 import sys
 import six
 
+#Inicializacion de directorio de funciones, los cuadruplos a leer
 dir_func = {}
 dir_quadruples = {}
+
+#Stack para saber desde donde se llama una funcion y de los niveles de memoria.
 llamadas = Stack()
 memorias = Stack()
+
+#Memoria global
 memoria_global = Memoria()
+
+#Stack usada para manejo de funciones
 this_func = Stack()
 param_stack = Stack()
 
@@ -21,7 +28,7 @@ top_limit_cte = 30000
 #pointers 30000-+++
 
 
-
+#Funcion para modificar el valor de una direccion de memoria.
 def set_value(address, value):
     if address < top_limit_global:
         memoria_global.set_value(address, value)
@@ -36,6 +43,7 @@ def set_value(address, value):
         #else:
         memoria_global.set_value(address, value)
 
+#Funcion para obtener el valor de una direccion de memoria.
 def get_value(address):
     if address < top_limit_global:
         return memoria_global.get_value(address)
@@ -51,11 +59,13 @@ def get_value(address):
         #else:
         return memoria_global.get_value(address)
 
+#Funcion que guarda en memoria global las constantes desde el parser.
 def save_ctes():
     global memoria_global
     for i in dir_func['constants']['cte']:
         memoria_global.set_value(dir_func['constants']['cte'][i]['address'], i)
 
+#Funcion para  obtener el parametro por su tipo para operaciones de maquina virtual.
 def getParam(address):
     if(address >= 30000):
         return getParam(get_value(address))
@@ -68,6 +78,7 @@ def getParam(address):
     else:
         return bool(get_value(address))
 
+#Funcon general de calculos de valores.
 def calculate(p1, op, p2):
     if(op == '+'):
         return p1 + p2
@@ -94,7 +105,7 @@ def calculate(p1, op, p2):
     elif(op == '|'):
         return p1 or p2
 
-
+#Funcion general de movimiento entre cuádruplos.
 def run():
     global memoria_global, param_stack, memorias, llamadas, pila_returns, this_func
     #añadiendo ctes y apuntadores a memoria.

@@ -1,4 +1,5 @@
 import sys
+#Clase de manejo de memoria con get y set properties privada.
 class Memoria:
     def __init__(self):
         # address valor

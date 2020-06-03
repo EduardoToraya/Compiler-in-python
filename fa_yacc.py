@@ -5,14 +5,13 @@ from semantic_cube import semantic_cube
 from pprint import pprint
 from stack import Stack
 
+# Se definen los rangos de direcciones por tipo de dato.
 DIR_BASE_INT = 0
 DIR_BASE_FLOAT = 2500
 DIR_BASE_CHAR = 5000
 DIR_BASE_BOOL = 7500
 
-# nombre funcion guardar en espacio funcion
-# en el era
-
+# Se define el largo por seccion y los rangos de direcciones base.
 DIR_LENGTH = 2500
 
 DIR_BASE_GLOBAL = 0
@@ -20,22 +19,30 @@ DIR_BASE_LOCAL = 10000
 DIR_BASE_CTE = 20000
 DIR_BASE_POINTER = 30000
 
+# Contador de parametros y se guarda la función en la que esta la variable llamada.
 address_func_var_global = None
 parameter_counter = 0
 retornoFuncion = None
 
 curr_Call = None
 
+#Clase operando para el push a la pila de operandos con id y con address
 class Operando:
     def __init__(self):
         self.id = None
         self.address = None
 
+#contadores para manejo de temporales de cuadruplos legibles.
 currTemp = 1;
 currTempArr = 1;
+#variable para tipo de expresion global
 current_type = ''
 current_exp = None
+#inicializa  la funcion actual como global
 current_func = 'global'
+
+#se inicializa el directorio de funciones con las direcciones base de
+#integros de variables globales, de constantes y de apuntadores a arreglos.
 dir_func = {
     'global': {
         'vars': {},
@@ -51,15 +58,10 @@ dir_func = {
         'next_char': DIR_BASE_CTE + DIR_BASE_CHAR,
         'next_bool': DIR_BASE_CTE + DIR_BASE_BOOL,
         'cte': {
-            #'a': 1000 Formato compilación
-            #1000: 'a' Formato maquina virtual
         }
     },
     'array_pointers' : {
         'next_pointer' : DIR_BASE_POINTER
-#        'pointer': {
-        #
-        #}
     }
 }
 
@@ -76,7 +78,7 @@ pilaSaltos = Stack();
 
 success = True
 
-## gramatic rules
+## Funcion que inicializa el programa e imprime los cruadruplos y el directorio de funciones.
 def p_programa(p):
     '''
     programa : PROGRAMA p_n_mainJump ID SEMICOLON vars mult_funcion principal
@@ -90,6 +92,7 @@ def p_programa(p):
     for i, cuadruplo in enumerate(read_quadruples):
         print(i, cuadruplo, " ",'\t\t', i ,dir_quadruples[i])
 
+#genera cuadruplo para el salto a la funcion principal para comenzar ejecución.
 def p_n_mainJump(p):
     '''
     p_n_mainJump :
@@ -99,6 +102,7 @@ def p_n_mainJump(p):
     dir_quadruples.append(temp_quad)
     read_quadruples.append(temp_quad)
 
+#Grupo de funciones para registrar el cuadruplo donde empieza principal.
 def p_principal(p):
     '''
     principal : PRINCIPAL n_register_glob LPAREN RPAREN bloque
@@ -141,6 +145,7 @@ def p_vars_aux2(p):
     		  | ID LSQUARE CTE_I n_save_array RSQUARE
   '''
 
+#Codigo para agregar arreglos, igual a variable pero con tamaño.
 def p_n_save_array(p):
     '''
         n_save_array :
@@ -157,6 +162,7 @@ def p_n_save_array(p):
             'size' : int(size)
         }
 
+#Guarda cariable con su tipo y direccion en el directorio de funciones.
 def p_n_save_var(p):
     '''
         n_save_var :
@@ -171,6 +177,8 @@ def p_n_save_var(p):
             'address': get_next_var_address(p)
         }
 
+#Funcion de manejo de memoria para conseguir la siguiente direccion de un arreglo
+#Toma en cuenta el tamaño del arreglo para dar la siguiente direccion.
 def get_next_arr_address(p, size):
     global dir_func
     if current_func == 'global':
@@ -194,6 +202,7 @@ def get_next_arr_address(p, size):
     else:
         error(p, "Numero de variables en su limite")
 
+#Funcion de manejo de memoria para conseguir la siguiente direccion de una variable
 def get_next_var_address(p):
     global dir_func
     if current_func == 'global':
@@ -217,6 +226,7 @@ def get_next_var_address(p):
     else:
         error(p, "Numero de variables en su limite")
 
+#Funcion de manejo de memoria para conseguir la siguiente direccion de un apuntador
 def get_next_pointer_address(p):
     global dir_func, DIR_BASE_POINTER
     if dir_func['array_pointers']['next_pointer'] - DIR_BASE_POINTER < DIR_LENGTH*4:
@@ -229,7 +239,7 @@ def get_next_pointer_address(p):
     else:
         error(p, "Numero de variables de arreglos en su limite")
 
-
+#Funcion de manejo de memoria para conseguir la siguiente direccion de un arreglo
 def get_next_cte_address(p, id):
     global dir_func, current_type
     if (id in dir_func['constants']['cte']):
@@ -254,6 +264,7 @@ def get_next_cte_address(p, id):
         else:
             error(p, "Numero de constantes " + current_type + " en su límite")
 
+#Funciones auxiliares para guardar el tipo de la expresion.
 def p_tipo_simple(p):
     '''
     tipo_simple : INT n_save_type
@@ -272,12 +283,15 @@ def p_empty(p):
     empty :
     '''
 
+#Funcion para llamada a la variable, se apega a la gramática con subfunciones.
 def p_variable(p):
     '''
     variable : ID n_getVarVal LSQUARE n_start_FF n_hasDim mult_exp RSQUARE n_end_FF n_arr_quad
              | ID n_getVarVal
     '''
 
+#Maneja las stacks de tipo y operando así como la generación de cruadruplos
+#Funcion específica de arreglos y de generación de verificación.
 def p_n_arr_quad(p):
     '''
     n_arr_quad :
@@ -318,7 +332,7 @@ def p_n_arr_quad(p):
     toPush.address = dir_array
     pilaOp.push(toPush)
 
-
+#Revisa si una variable que se identifica como arreglo requiere dimensiones
 def p_n_hasDim(p):
     '''
     n_hasDim :
@@ -335,7 +349,8 @@ def p_n_hasDim(p):
     if(len(dir_func[aux]['vars'][temp_op.id]) < 3):
         error(p, 'La variable que se está tratando de accesar requiere dimensión')
 
-
+#Obtiene el valor de una variable, se usa para no dimensionadas y dimensionadas
+#Obtienee su tipo y si id.
 def p_n_getVarVal(p):
     '''
     n_getVarVal :
@@ -361,6 +376,9 @@ def p_n_getVarVal(p):
         else:
             error(p, "La variable no se encuentra en el ambiente")
 
+#Conjunto de funciones para tener Funciones
+#De tipo void o con retorno de char int o float.
+#Con parametros y sin parametros.
 def p_mult_funcion(p):
     '''
     mult_funcion : funcion
@@ -381,6 +399,8 @@ def p_funcion(p):
   global dir_func
   del dir_func[current_func]['vars']
 
+#Inicializa la funcion con su pertinente información
+#Numero de variables tipo, en qué cuadruplo comienza, y su manejador de mememoria.
 def p_n_register_func(p):
     '''n_register_func : '''
     global dir_func, current_func, current_type
@@ -416,7 +436,7 @@ def p_n_register_func(p):
                 current_func = p[-1]
 
 
-
+#Funcion para llamada a funciones con parámetro
 def p_param(p):
   '''
   param : tipo_simple param_aux1
@@ -429,6 +449,8 @@ def p_param_aux1(p):
   		     | ID save_param COMMA param
   '''
 
+#Funcion que revisa si un parámetro de los que
+#se tienen en la declaración de la función ya existe.
 def p_save_param(p):
     '''
     save_param :
@@ -444,6 +466,8 @@ def p_save_param(p):
             'address': get_next_var_address(p)
         }
 
+#Punto neurálgico para el final de la función donde se reinicial las variables
+#Y se genera cuadruplo de terminación de la función.
 def p_n_endof_func(p):
     '''
     n_endof_func :
@@ -459,6 +483,7 @@ def p_n_endof_func(p):
     currTemp = 1
 
 
+#Funciones para la gramática de estatutos.
 def p_bloque(p):
   '''
   bloque : LBRACKET mult_estatutos RBRACKET
@@ -484,11 +509,11 @@ def p_estatuto(p):
            | ciclo_f
   '''
 
+#Conjunto de funciones para la acción de asignación.
 def p_asigna(p):
   '''
   asigna : mult_asigna
   '''
-
 
 def p_mult_asigna(p):
     '''
@@ -523,12 +548,14 @@ def p_n_asignQuad(p):
                 error(p, "Tipo no compatible para la operacion de asignación")
 
 
+#Función para tener el exponente de un parámetro.
 def p_param_exp(p):
     '''
     param_exp : mult_exp n_parameter_action
               | mult_exp n_parameter_action COMMA param_exp
     '''
 
+#Funcion para generar cuadruplos de parámetros.
 def p_n_parameter_action(p):
     '''
     n_parameter_action :
@@ -550,6 +577,7 @@ def p_n_parameter_action(p):
     else:
         error(p, "El parametro "+ str(parameter_counter+1) + " de la funcion es incorrecto");
 
+#Manejo de memoria de los parámetros.
 def getParamAddress(counter, type):
     global current_func
     tempBase = 0
@@ -562,12 +590,15 @@ def getParamAddress(counter, type):
     return counter + tempBase + DIR_BASE_LOCAL
 
 
+#Conjunto de funciones para  llamada a funciones.
 def p_llamada(p):
   '''
   llamada : ID n_verify_func LPAREN n_start_FF n_start_pcounter param_exp RPAREN n_end_FF n_last_param_action
           | ID n_verify_func LPAREN n_start_FF n_start_pcounter RPAREN n_end_FF n_last_param_action
   '''
 
+#Ultimo punto neurálgico que revisa consistencia entre numero de parámetros y parámetros declarados.
+#Empuja a la pila de operandos el resultado de la llamada  como cualquier otra expresion.
 def p_n_last_param_action(p):
     '''
     n_last_param_action :
@@ -600,6 +631,7 @@ def p_n_last_param_action(p):
             dir_quadruples.append(temp_quad)
             pilaOp.push(temp_op)
 
+#Funcion para contar el número de parámetros.
 def p_n_start_pcounter(p):
     '''
     n_start_pcounter :
@@ -613,6 +645,7 @@ def p_n_start_pcounter(p):
         #temp_quad = ['ERA', address_func_var_global, -1, -1];
     dir_quadruples.append(temp_quad)
 
+#Verifica que la función exista.
 def p_n_verify_func(p):
     '''
     n_verify_func :
@@ -623,6 +656,7 @@ def p_n_verify_func(p):
     else:
         curr_Call = p[-1]
 
+#Genera cuadruplo de lectura para el usuario.
 def p_lee(p):
   '''
   lee : LEE LPAREN variable RPAREN SEMICOLON
@@ -635,7 +669,7 @@ def p_lee(p):
   temp_quad = ['read', -1, -1, elemento.address]
   dir_quadruples.append(temp_quad)
 
-
+#Conjunto de funciones para generación del cuadruplo escribe.
 def p_escribe(p):
   '''
   escribe : ESCRIBE LPAREN mult_exp n_escribeExp RPAREN SEMICOLON
@@ -653,6 +687,7 @@ def p_n_escribeExp(p):
     currQuad = ['print', -1, -1, operando.address]
     dir_quadruples.append(currQuad)
 
+#Conjunto de expresiones para expresiones mult div exp llamadas etc.
 def p_mult_cte_s(p):
   '''
   mult_cte_s : CTE_S
@@ -670,7 +705,7 @@ def p_exp(p):
   exp : t_exp n_orQuad
   	  | t_exp n_orQuad OR n_Operador exp
   '''
-
+#Genera cuadruplo y maneja pilas para operaciones de OR
 def p_n_orQuad(p):
     '''
     n_orQuad :
@@ -712,7 +747,7 @@ def p_t_exp(p):
   t_exp : g_exp n_andQuad
         | g_exp n_andQuad AND n_Operador t_exp
   '''
-
+#Genera cuadruplo y maneja pilas para operaciones de AND
 def p_n_andQuad(p):
     '''
     n_andQuad :
@@ -759,6 +794,7 @@ def p_g_exp(p):
         | m_exp n_compareQuad NOEQUAL n_Operador g_exp
   '''
 
+#Genera cuadruplo y maneja pilas para operaciones de comparativos
 def p_n_compareQuad(p):
     '''
     n_compareQuad :
@@ -800,7 +836,7 @@ def p_m_exp(p):
   	    | t n_sumQuad PLUS n_Operador m_exp
         | t n_sumQuad MINUS n_Operador m_exp
   '''
-
+#Genera cuadruplo y maneja pilas para operaciones de suma y resta
 def p_n_sumQuad(p):
     '''
     n_sumQuad :
@@ -842,7 +878,7 @@ def p_t(p):
       | f n_multQuad DIV n_Operador t
   '''
 
-#n_multQuad
+#Genera cuadruplo y maneja pilas para operaciones de multiplicacion y division
 def p_n_multQuad(p):
     '''
     n_multQuad :
@@ -885,6 +921,7 @@ def p_n_Operador(p):
     sim = p[-1]
     popper.push(sim)
 
+#Nivel mas bajo de expresion con constantes, variables, llamadas a funciones y paréntesis,
 def p_f(p):
   '''
   f : LPAREN n_start_FF mult_exp RPAREN n_end_FF
@@ -896,7 +933,7 @@ def p_f(p):
     | variable
     | llamada
   '''
-
+#Funcion auxiliar para tipo de variable leida en cada caso.
 def p_n_tempTypeI(p):
     '''
     n_tempTypeI :
@@ -918,6 +955,7 @@ def p_n_tempTypeC(p):
     global current_type
     current_type = "char"
 
+#Funcion auxiliar  para manejo de constantes negativas y evitar error.
 def p_n_directPrint_neg(p):
     '''
     n_directPrint_neg :
@@ -930,6 +968,7 @@ def p_n_directPrint_neg(p):
     pilaOp.push(operador)
     pilaTipos.push(current_type)
 
+#Auxliar  para constantes a expresiones y que se puedan usar en operaciones.
 def p_n_directPrint(p):
     '''
     n_directPrint :
@@ -942,6 +981,7 @@ def p_n_directPrint(p):
     pilaOp.push(operador)
     pilaTipos.push(current_type)
 
+#Inicio y termino del fondo falso usado en operaciones y arreglos.
 def p_n_start_FF(p):
     '''
     n_start_FF :
@@ -960,12 +1000,14 @@ def p_n_end_FF(p):
     else:
         error(p, "Error de paréntesis inconsistentes")
 
+#Conjunto de funciones para manejo de If y ELSE
 def p_condicion(p):
   '''
   condicion : SI LPAREN mult_exp RPAREN n_ifQuad ENTONCES bloque n_endIfQuad
             | SI LPAREN mult_exp RPAREN n_ifQuad ENTONCES bloque SINO p_n_sinoQuad bloque n_endIfQuad
   '''
 
+#Genera cuadruplo de gotoFalse
 def p_n_ifQuad(p):
     '''
     n_ifQuad :
@@ -982,6 +1024,7 @@ def p_n_ifQuad(p):
         dir_quadruples.append(quad)
         pilaSaltos.push(len(read_quadruples)-1)
 
+#Vacia pila de saltos y rellena espacios dejados vacios para manejo de saltos.
 def p_n_endIfQuad(p):
     '''
     n_endIfQuad :
@@ -991,6 +1034,7 @@ def p_n_endIfQuad(p):
     read_quadruples[end][3] = len(read_quadruples)
     dir_quadruples[end][3] = len(dir_quadruples)
 
+#Cuadruplo que maneja el else de la condicion.
 def p_n_sinoQuad(p):
     '''
     p_n_sinoQuad :
@@ -1004,6 +1048,7 @@ def p_n_sinoQuad(p):
     read_quadruples[falso][3] = len(read_quadruples)
     dir_quadruples[falso][3] = len(dir_quadruples)
 
+#conjunto de funciones que manejan el ciclo while.
 def p_ciclo_w(p):
   '''
   ciclo_w : MIENTRAS n_startCicle LPAREN mult_exp RPAREN n_evalExp HAZ bloque n_endWhile
@@ -1016,6 +1061,7 @@ def p_n_startCicle(p):
     global pilaSaltos
     pilaSaltos.push(len(read_quadruples))
 
+#Maneja especificamente el generar el cuadruplo gotoFalse.
 def p_n_evalExp(p):
     '''
     n_evalExp :
@@ -1032,6 +1078,7 @@ def p_n_evalExp(p):
         dir_quadruples.append(quad)
         pilaSaltos.push(len(read_quadruples)-1)
 
+#Termina el while, genera cuadruplo Goto y rellena cuadruplos de manejo de saltos.
 def p_n_endWhile(p):
     '''
     n_endWhile :
@@ -1046,9 +1093,7 @@ def p_n_endWhile(p):
     dir_quadruples.append(quad)
     dir_quadruples[end][3] = len(dir_quadruples)
 
-
-
-
+#Genera operacion del ciclo for. similar a la operacion anterior.
 def p_ciclo_f(p):
   '''
   ciclo_f : DESDE asigna n_startCicle HASTA mult_exp n_evalExp_for HACER bloque n_endFor
@@ -1085,6 +1130,7 @@ def p_n_evalExp_for(p):
         dir_quadruples.append(quad)
         pilaSaltos.push(len(read_quadruples)-1)
 
+#Termina el cilo for.
 def p_n_endFor(p):
     '''
     n_endFor :
@@ -1098,12 +1144,13 @@ def p_n_endFor(p):
     dir_quadruples.append(quad)
     dir_quadruples[end][3] = len(dir_quadruples)
 
-
+#Conjunto de funciones que manejan el return de una función.
 def p_retorno(p):
   '''
   retorno : REGRESA LPAREN mult_exp n_regresaExp RPAREN SEMICOLON
   '''
 
+#Revisa que se este regresando el mismo tipo que la definición de la función y regresa memoria.
 def p_n_regresaExp(p):
     '''
     n_regresaExp :

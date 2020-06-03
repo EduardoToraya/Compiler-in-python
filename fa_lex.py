@@ -105,6 +105,7 @@ def t_ID(t):
     t.type = reserverd.get(t.value,'ID')
     return t
 
+##declaration for
 def t_newline(t):
          r'\n+'
          t.lexer.lineno += len(t.value)

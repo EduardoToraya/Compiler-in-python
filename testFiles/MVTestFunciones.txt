@@ -1,6 +1,6 @@
 programa patito;
 var
-int i;
+int i, b, c, d;
 int x;
 
 
@@ -59,4 +59,26 @@ principal()
     i = i+1;
   }
 
+
+  escribe('comienza fibbonacci iterativo');
+  b = 0;
+  c = 1;
+  d = 0;
+  desde i = 0 hasta x hacer{
+    escribe(b);
+    d = b + c;
+    b = c;
+    c = d;
+    i = i+1;
+  }
+
+
+  escribe('comienza factorial iterativo');
+  i = 1;
+  b = 1;
+  mientras(i < x) haz {
+    b = b*i;
+    escribe(b);
+    i = i+1;
+  }
 }
